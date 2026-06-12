@@ -13,15 +13,19 @@ merienda y cena de hoy. Los domingos marca "día libre".
   (Se guarda en tu navegador/móvil, no hace falta tocar nada más.)
 
 ## Cuando te dan una dieta nueva (cada mes)
-1. Mete los dos PDFs nuevos en la carpeta `Dietas/` (reemplaza los viejos).
-   El nombre debe seguir conteniendo "Semana 1 y 3" y "Semana 2 y 4".
-2. Doble clic en **`Actualizar dieta.command`** e indica el lunes en que
-   empiezas. Eso regenera `menu.json`.
-3. Sube los cambios a GitHub:
+1. Doble clic en **`Actualizar dieta.command`**. Te guía paso a paso:
+   - Te pide el PDF nuevo de "Semana 1 y 3": **arrástralo desde el Finder a la
+     ventana** y pulsa Enter (déjalo vacío si quieres mantener el actual).
+   - Lo mismo con el de "Semana 2 y 4".
+   - Te avisa de qué PDFs antiguos va a **BORRAR** (es **IRREVERSIBLE**, no van
+     a la papelera): tienes que escribir `BORRAR` para confirmar.
+   - **Escanea** los PDFs nuevos y te pide el lunes en que empiezas.
+   - Si un PDF está escaneado como imagen (sin texto), te avisa y no toca nada.
+2. Sube los cambios a GitHub:
    ```
    git add -A && git commit -m "Actualizar dieta" && git push
    ```
-4. (Opcional) En el móvil también puedes cambiar solo la fecha desde *Ajustes*.
+3. (Opcional) En el móvil también puedes cambiar solo la fecha desde *Ajustes*.
 
 ## Publicar en GitHub Pages (una sola vez)
 1. Crea un repositorio en https://github.com/new (puede ser **privado** si no
