@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pdftotext -layout \"Semana 2 y 4 Intervención 6 - María Sánchez Fernández.pdf\" -)",
+      "Bash(command -v git)",
+      "Bash(echo \"git: $\\(command -v git\\)\")",
+      "Bash(command -v gh)",
+      "Bash(echo \"gh: $\\(command -v gh\\)\")",
+      "Bash(command -v node)",
+      "Bash(python3 parse_dietas.py Dietas 2026-06-15)",
+      "Bash(node -e ' *)",
+      "Bash(python3 -m http.server 8765)",
+      "Bash(curl -s -o /dev/null -w \"index.html: %{http_code}\\\\n\" http://localhost:8765/)",
+      "Bash(curl -s -o /dev/null -w \"menu.json:  %{http_code}\\\\n\" http://localhost:8765/menu.json)",
+      "Bash(curl -s -o /dev/null -w \"app.js:     %{http_code}\\\\n\" http://localhost:8765/app.js)",
+      "Bash(open \"http://localhost:8765/?fecha=2026-06-18\")",
+      "Bash(node --check app.js)",
+      "Bash(open \"http://localhost:8765/\")",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git -c 'user.name=Maria Sanchez' -c user.email=maria.sanchez@woodsearch.es commit -q -m 'App: qué como hoy *)"
+    ]
+  }
+}

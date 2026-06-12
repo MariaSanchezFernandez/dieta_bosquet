@@ -1,0 +1,11 @@
+{
+  "name": "¿Qué como hoy?",
+  "short_name": "Mi dieta",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#eaf3ec",
+  "theme_color": "#3f7d4e",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

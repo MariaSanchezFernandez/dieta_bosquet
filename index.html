@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>¿Qué como hoy?</title>
+  <meta name="theme-color" content="#3f7d4e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Mi dieta">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="app">
+    <header>
+      <p class="fecha" id="fecha">—</p>
+      <h1 id="titulo-dia">Cargando…</h1>
+      <p class="semana" id="semana"></p>
+    </header>
+
+    <div id="banner"></div>
+    <section id="contenido"></section>
+
+    <footer>
+      <button id="btn-ver" type="button">👀 Ver otro día</button>
+      <div id="ver-otro" hidden>
+        <label for="ver-fecha">Mira qué toca otro día:</label>
+        <input type="date" id="ver-fecha">
+      </div>
+      <button id="btn-ajustes" type="button">⚙︎ Ajustes</button>
+      <div id="ajustes" hidden>
+        <label for="inicio">Inicio de esta dieta (lunes de la Semana 1):</label>
+        <input type="date" id="inicio">
+        <div class="botones">
+          <button id="guardar" type="button">Guardar</button>
+          <button id="reset" type="button" class="secundario">Usar la del archivo</button>
+        </div>
+        <p class="nota">Cuando empieces una dieta nueva, cambia aquí la fecha.</p>
+      </div>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

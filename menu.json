@@ -1,0 +1,123 @@
+{
+  "fechaInicio": "2026-06-15",
+  "comun": {
+    "alLevantarte": "Vaso de agua",
+    "desayuno": "½ tostada con AOVE + tomate + Jamón cocido / Jamón serrano / atún en conserva / huevo (1-1,5 unds) + Agua + Pieza de fruta al gusto",
+    "merienda": "Pieza de fruta variada a lo largo de la semana y a ser posible de temporada"
+  },
+  "semanas": {
+    "1y3": {
+      "Lunes": {
+        "almuerzo": [
+          "Guiso de lentejas con verduras al gusto y arroz"
+        ],
+        "cena": [
+          "Cazuela de habitas baby con taquitos de jamón (sin gamba) y huevo duro"
+        ]
+      },
+      "Martes": {
+        "almuerzo": [
+          "Merluza a la riojana",
+          "Parrillada de verduras asadas al gusto"
+        ],
+        "cena": [
+          "Ensalada canónigos, espinacas baby, tomate, zanahoria rallada, pepino, pimiento verde, huevo cocido y pollo troceado"
+        ]
+      },
+      "Miércoles": {
+        "almuerzo": [
+          "Ensalada de garbanzos con verduras al gusto y huevo cocido"
+        ],
+        "cena": [
+          "Ajoblanco",
+          "Pechuga de pavo a la plancha con espárragos trigueros"
+        ]
+      },
+      "Jueves": {
+        "almuerzo": [
+          "Wok de calabacín, champiñón, pimiento rojo, salsa de soja, quinoa y ternera troceada"
+        ],
+        "cena": [
+          "Gazpacho de sandía",
+          "Brocheta de salmón, calabacín, pimiento verde y AOVE"
+        ]
+      },
+      "Viernes": {
+        "almuerzo": [
+          "Dorada/lubina a la plancha",
+          "Salteado de quinoa con brócoli, zanahoria y cebolla"
+        ],
+        "cena": [
+          "Pechuga de pollo a la plancha",
+          "Salteado de ñoquis de patata con verduras al gusto"
+        ]
+      },
+      "Sábado": {
+        "almuerzo": [
+          "Pasta de lenteja con cebolla, zanahoria, calabacín y pollo troceado"
+        ],
+        "cena": [
+          "Gazpacho de sandía",
+          "Cinta de lomo de cerdo a la plancha con ajo y perejil con calabacín, zanahoria y maíz"
+        ]
+      }
+    },
+    "2y4": {
+      "Lunes": {
+        "almuerzo": [
+          "Cocido de garbanzos con verduras al gusto y arroz"
+        ],
+        "cena": [
+          "Ensalada de lechuga, tomate, maíz, espárragos blancos y pollo troceado"
+        ]
+      },
+      "Martes": {
+        "almuerzo": [
+          "Lubina a la plancha con ajo, perejil y limón",
+          "Pisto de verduras al gusto"
+        ],
+        "cena": [
+          "Salmorejo",
+          "Salteado de pollo en tiras con berenjena y curry en polvo"
+        ]
+      },
+      "Miércoles": {
+        "almuerzo": [
+          "Pasta de lentejas con sofrito de verduras al gusto y atún en conserva"
+        ],
+        "cena": [
+          "Gazpacho",
+          "Revuelto de huevos, setas y jamón cocido"
+        ]
+      },
+      "Jueves": {
+        "almuerzo": [
+          "Merluza en salsa verde (perejil, ajo y AOVE) a la plancha",
+          "Salteado de guisantes y espárragos con quinoa"
+        ],
+        "cena": [
+          "Lomo de cerdo a la plancha",
+          "Menestra de verduras al gusto"
+        ]
+      },
+      "Viernes": {
+        "almuerzo": [
+          "Ensalada de garbanzos con tomate, pepino, maíz, zanahoria y huevo cocido"
+        ],
+        "cena": [
+          "Ensalada de judías verdes con tomate, cebolleta y melva al natural desmenuzada"
+        ]
+      },
+      "Sábado": {
+        "almuerzo": [
+          "Tortilla de patata y cebolla",
+          "Salmorejo con taquitos de jamón"
+        ],
+        "cena": [
+          "Pez espada a la plancha",
+          "Arroz integral salteado con champiñones, ajo y perejil"
+        ]
+      }
+    }
+  }
+}
