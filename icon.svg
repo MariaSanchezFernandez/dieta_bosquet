@@ -1,8 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#3f7d4e"/>
-  <g fill="none" stroke="#eaf3ec" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="256" cy="276" r="120"/>
-    <path d="M256 156 C 256 96, 296 70, 336 76" />
-    <path d="M196 150 v 70 M226 150 v 70 M211 150 v 78 M211 228 v 30"/>
-  </g>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4c8f5d"/>
+      <stop offset="1" stop-color="#356b43"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- manzana -->
+  <path fill="#f6faf2" d="M256 196
+    c-26-24-66-30-100-14-40 19-58 64-50 116
+    8 52 36 104 76 122 18 8 30-4 44-4
+    h60c14 0 26 12 44 4 40-18 68-70 76-122
+    8-52-10-97-50-116-34-16-74-10-100 14z"/>
+  <!-- hoja -->
+  <path fill="#bfe3c4" d="M268 150
+    c8-34 36-58 70-58 2 34-22 64-56 68z"/>
+  <!-- tallo -->
+  <path fill="none" stroke="#8a6a4a" stroke-width="14" stroke-linecap="round"
+    d="M262 188c-6-26-2-46 6-58"/>
 </svg>
