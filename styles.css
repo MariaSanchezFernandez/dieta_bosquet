@@ -141,6 +141,15 @@ header { text-align: center; margin-bottom: clamp(18px, 4vw, 28px); }
   border-radius: 12px;
   padding: 10px 14px;
 }
+.aviso-menu {
+  grid-column: 1 / -1;
+  font-size: .85rem;
+  color: var(--verde-osc);
+  background: var(--verde-claro);
+  border: 1px solid #cfe4d3;
+  border-radius: 12px;
+  padding: 10px 14px;
+}
 
 .comida h2 {
   font-size: .82rem;

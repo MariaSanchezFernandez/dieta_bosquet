@@ -49,6 +49,17 @@ function getFechaInicio(datos) {
   return localStorage.getItem("fechaInicio") || datos.fechaInicio;
 }
 
+// El PDF diseña un plato ya bajo en carbohidratos en días concretos
+// (campo "naranja" de cada día). En vez de romper la pareja comida+cena de
+// un mismo día, se reordena qué día completo (desayuno+comida+cena, tal
+// cual lo diseñó la nutricionista) se sirve cada día real de la semana, para
+// que ese plato caiga solo donde se necesita. Ver "ordenDias" en menu.json.
+function diaFuente(datos, nombreDiaReal) {
+  const orden = datos.ordenDias || DIAS_LAB;
+  const i = DIAS_LAB.indexOf(nombreDiaReal);
+  return orden[i] || nombreDiaReal;
+}
+
 // ---- render ----
 function render(datos) {
   const override = vistaFecha || new URLSearchParams(location.search).get("fecha");
@@ -111,9 +122,7 @@ function diaLibre(hoy) {
     </div>${avisoLunes}`;
 }
 
-// Calcula qué comidas deben ir sin carbos y, si el plato ya diseñado
-// "naranja" cae en la otra comida del día, intercambia almuerzo <-> cena
-// para que el plato ya bajo en carbohidratos caiga donde se necesita.
+// Qué comidas deben ir sin carbos hoy, según el entreno Z2 configurado.
 function calcularComidas(diaOriginal, hoy) {
   const dow = hoy.getDay();
   const ent = getEntrenos(hoy);
@@ -124,45 +133,43 @@ function calcularComidas(diaOriginal, hoy) {
   const necesitaAlmuerzo = !!(sesionHoy && sesionHoy.momento === "tarde");
   const desayunoSin = !!sesionHoy;
 
-  let almuerzo = diaOriginal.almuerzo;
-  let cena = diaOriginal.cena;
-  let swapAlmuerzo = false;
-  let swapCena = false;
-  let disenadoAlmuerzo = necesitaAlmuerzo && diaOriginal.naranja === "almuerzo";
-  let disenadoCena = necesitaCena && diaOriginal.naranja === "cena";
-
-  const necesitaSoloUna = necesitaAlmuerzo !== necesitaCena; // exactamente una de las dos
-  if (necesitaSoloUna && necesitaAlmuerzo && diaOriginal.naranja === "cena") {
-    almuerzo = diaOriginal.cena; cena = diaOriginal.almuerzo;
-    swapAlmuerzo = true; disenadoAlmuerzo = true;
-  } else if (necesitaSoloUna && necesitaCena && diaOriginal.naranja === "almuerzo") {
-    almuerzo = diaOriginal.cena; cena = diaOriginal.almuerzo;
-    swapCena = true; disenadoCena = true;
-  }
-
   return {
-    almuerzo, cena, necesitaAlmuerzo, necesitaCena, desayunoSin,
-    disenadoAlmuerzo, disenadoCena, swapAlmuerzo, swapCena, sesionHoy,
+    almuerzo: diaOriginal.almuerzo,
+    cena: diaOriginal.cena,
+    necesitaAlmuerzo,
+    necesitaCena,
+    desayunoSin,
+    // gracias al reordenamiento de días (ordenDias), lo normal es que el
+    // plato ya diseñado sin carbos ("naranja") coincida directamente;
+    // si algún día no coincide (p.ej. tras editar los entrenos), se avisa
+    // con la instrucción genérica en vez de romper la pareja comida+cena.
+    disenadoAlmuerzo: necesitaAlmuerzo && diaOriginal.naranja === "almuerzo",
+    disenadoCena: necesitaCena && diaOriginal.naranja === "cena",
+    sesionHoy,
   };
 }
 
-function tarjetasDelDia(datos, hoy, clavePlan, nombreDia) {
-  const diaOriginal = datos.semanas[clavePlan][nombreDia];
+function tarjetasDelDia(datos, hoy, clavePlan, nombreDiaReal) {
+  const nombreDiaFuente = diaFuente(datos, nombreDiaReal);
+  const diaOriginal = datos.semanas[clavePlan][nombreDiaFuente];
   const c = datos.comun;
   const r = calcularComidas(diaOriginal, hoy);
 
   const desayunoTexto = r.desayunoSin ? c.desayunoSinCHO : c.desayunoConCHO;
   const listaHTML = (arr) => "<ul>" + arr.map(x => `<li>${x}</li>`).join("") + "</ul>";
-  const notaAlmuerzo = r.swapAlmuerzo ? " (intercambiado con la cena)" : "";
-  const notaCena = r.swapCena ? " (intercambiado con el almuerzo)" : "";
+
+  const avisoMenu = nombreDiaFuente !== nombreDiaReal
+    ? `<p class="aviso-menu">📋 Hoy comes el menú de <b>${nombreDiaFuente}</b> (reordenado para que el plato sin carbos caiga en su sitio).</p>`
+    : "";
 
   const bloques = [
     panelEntrenos(hoy, r),
+    avisoMenu,
     c.alLevantarte ? tarjeta("🌅", "Al levantarte", `<p>${c.alLevantarte}</p>`, false) : "",
     tarjeta("☕", "Desayuno", `<p>${desayunoTexto}</p>`, r.desayunoSin),
-    tarjeta("🍽️", "Almuerzo" + notaAlmuerzo, opciones(r.almuerzo, listaHTML), r.necesitaAlmuerzo),
+    tarjeta("🍽️", "Almuerzo", opciones(r.almuerzo, listaHTML), r.necesitaAlmuerzo),
     c.merienda ? tarjeta("🍎", "Merienda", `<p>${c.merienda}</p>`, false) : "",
-    tarjeta("🌙", "Cena" + notaCena, opciones(r.cena, listaHTML), r.necesitaCena),
+    tarjeta("🌙", "Cena", opciones(r.cena, listaHTML), r.necesitaCena),
   ];
 
   let leyenda = "";
@@ -170,12 +177,12 @@ function tarjetasDelDia(datos, hoy, clavePlan, nombreDia) {
     const partes = [];
     if (r.necesitaAlmuerzo) {
       partes.push(r.disenadoAlmuerzo
-        ? `el almuerzo ya está diseñado sin carbohidratos${r.swapAlmuerzo ? " (se intercambia con la cena para que caiga aquí)" : ""}`
+        ? "el almuerzo ya está diseñado sin carbohidratos"
         : "quita el hidrato (arroz, patata, pasta, quinoa, pan, legumbre) del almuerzo");
     }
     if (r.necesitaCena) {
       partes.push(r.disenadoCena
-        ? `la cena ya está diseñada sin carbohidratos${r.swapCena ? " (se intercambia con el almuerzo para que caiga aquí)" : ""}`
+        ? "la cena ya está diseñada sin carbohidratos"
         : "quita el hidrato (arroz, patata, pasta, quinoa, pan, legumbre) de la cena");
     }
     leyenda = `<p class="leyenda">🔶 <b>Hoy sin carbos</b>: ${partes.join("; ")}.`;

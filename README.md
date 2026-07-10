@@ -19,11 +19,18 @@ merienda y cena de hoy. Los domingos marca "día libre".
 
   El PDF ya diseña un plato bajo en carbohidratos en días fijos (marcados en
   naranja: cada `menu.json` guarda qué comida —almuerzo o cena— es ese plato,
-  campo `naranja`). Si el día que necesitas sin carbos no coincide con el
-  diseño del PDF, la app **intercambia el almuerzo y la cena de ese día**
-  para que el plato ya pensado sin carbohidratos caiga en la comida correcta
-  (se avisa con «(intercambiado con…)»). Si ese día no hay ningún plato
-  diseñado sin carbos, usa el aviso genérico de "quita el hidrato".
+  campo `naranja`). En vez de romper la pareja comida+cena de un mismo día,
+  la app **reordena qué día completo (desayuno+comida+cena, tal cual lo
+  diseñó la nutricionista) se sirve cada día real** de la semana —campo
+  `ordenDias` en `menu.json`— para que ese plato caiga solo donde se
+  necesita. Cuando un día muestra el menú de otro día, aparece un aviso
+  «📋 Hoy comes el menú de…». Si algún día no hay ningún plato diseñado sin
+  carbos que reubicar (p.ej. tras editar los entrenos a otros días), se usa
+  el aviso genérico de "quita el hidrato" como último recurso.
+
+  ⚠️ El `ordenDias` actual está calculado para el horario por defecto
+  (Martes tarde + Viernes mañana). Si cambias los entrenos de una semana a
+  otros días, avísame para recalcularlo y que siga cuadrando.
 - **Ver otro día**: botón abajo para mirar qué toca cualquier fecha.
 - **Ajustes**: ahí cambias la fecha de inicio cuando empieza una dieta nueva.
   (Se guarda en tu navegador/móvil, no hace falta tocar nada más.)
