@@ -8,17 +8,17 @@ Calcula sola en qué semana del ciclo estás y alterna entre los dos PDFs
 Abres la web (o el acceso directo del móvil) y te muestra desayuno, almuerzo,
 merienda y cena de hoy. Los domingos marca "día libre".
 
-- **Entreno Zona 2**: cada día te pregunta si entrenas en Z2 y cuándo
-  (No / Por la mañana / Por la tarde). Según tu respuesta marca qué comidas van
-  **🔶 sin carbos** y qué desayuno usar:
-  - **Z2 por la mañana** → desayuno sin CHO (yogur) + cena sin carbos.
-  - **Z2 por la tarde** → desayuno sin CHO (yogur) + comida sin carbos.
-  - **Sin entreno** → todo normal (con CHO).
+- **Entreno Zona 2**: al empezar la semana configuras tus **2 entrenos Z2**
+  (qué día y si mañana/tarde), en el panel «🏃 Entrenos Z2 de esta semana».
+  La app coloca sola las comidas **🔶 sin carbos**:
+  - **Z2 por la mañana** → desayuno sin CHO (yogur) + **cena de la víspera**
+    (la noche anterior) sin carbos.
+  - **Z2 por la tarde** → desayuno sin CHO (yogur) + **comida** sin carbos.
+  - Los días sin entreno van normales (con CHO).
 
-  Esto reproduce el naranja del PDF: cena naranja = día de entreno por la
-  mañana; comida naranja = día de entreno por la tarde.
-  Cuando registras tus **2 entrenos Z2** de la semana, deja de preguntar hasta
-  el lunes siguiente.
+  Esto reproduce el naranja del PDF: cena naranja = víspera de un entreno de
+  mañana; comida naranja = día de entreno por la tarde. Como configuras solo tus
+  2 sesiones reales, no hay comidas sin carbos "sueltas".
 - **Ver otro día**: botón abajo para mirar qué toca cualquier fecha.
 - **Ajustes**: ahí cambias la fecha de inicio cuando empieza una dieta nueva.
   (Se guarda en tu navegador/móvil, no hace falta tocar nada más.)

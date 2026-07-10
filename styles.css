@@ -82,28 +82,36 @@ header { text-align: center; margin-bottom: clamp(18px, 4vw, 28px); }
   padding: 14px 16px;
   box-shadow: var(--sombra);
 }
-.entreno .preg { font-weight: 600; margin-bottom: 10px; }
-.entreno .cont { font-weight: 400; opacity: .8; font-size: .85rem; }
-.entreno .ops { display: flex; flex-wrap: wrap; gap: 8px; }
-.entreno .ops button {
-  flex: 1 1 auto;
-  background: rgba(255, 255, 255, .14);
-  color: #fff;
-  padding: 12px 10px;
-  font-size: .92rem;
-}
-.entreno .ops button.sel {
-  background: #fff;
-  color: var(--verde-osc);
-  font-weight: 700;
-}
-.entreno.hecho { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
-.entreno.hecho button {
+.entreno .preg { font-weight: 700; margin-bottom: 6px; }
+.entreno .resumen { font-size: 1.05rem; margin-bottom: 4px; }
+.entreno .nota-hoy { font-size: .85rem; opacity: .85; margin-bottom: 12px; }
+.entreno > button {
   background: rgba(255, 255, 255, .16);
   color: #fff;
-  font-size: .82rem;
-  padding: 8px 12px;
+  font-size: .85rem;
+  padding: 9px 14px;
 }
+.entreno .slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+.entreno .slot label { font-size: .85rem; opacity: .85; min-width: 74px; }
+.entreno .slot select {
+  font: inherit;
+  flex: 1 1 120px;
+  min-width: 0;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--texto);
+}
+.entreno .ent-acciones { display: flex; gap: 10px; margin-top: 14px; }
+.entreno .ent-acciones button { flex: 1; }
+.entreno .ent-acciones .secundario { background: rgba(255, 255, 255, .16); color: #fff; }
 
 .comida {
   background: var(--tarjeta);

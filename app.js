@@ -1,12 +1,12 @@
 "use strict";
 
 const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+const DIAS_LAB = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-const ENTRENOS_SEMANA = 2; // sesiones de Zona 2 por semana
 
 let vistaFecha = null;      // "ver otro día" (null = hoy)
-let forzarSelector = false; // mostrar el selector aunque ya estén hechas las 2
+let editorAbierto = false;  // panel de configurar entrenos abierto
 
 // ---- utilidades de fecha ----
 function aMedianoche(d) {
@@ -26,21 +26,21 @@ function lunesDe(d) {
   x.setDate(x.getDate() - dow);
   return x;
 }
-function diasDeLaSemana(d) {
-  const l = lunesDe(d);
-  return Array.from({ length: 7 }, (_, i) => {
-    const x = new Date(l);
-    x.setDate(l.getDate() + i);
-    return clave(x);
-  });
-}
 
-// ---- entreno Z2 en localStorage ----
-function getZ2(fechaKey) {
-  return localStorage.getItem("z2-" + fechaKey) || "no";
+// ---- entrenos de la semana en localStorage ----
+// Cada entreno: {dia: 1..6 (Lun..Sáb), momento: "manana"|"tarde"}
+function claveSemana(d) {
+  return "entrenos-" + clave(lunesDe(d));
 }
-function setZ2(fechaKey, valor) {
-  localStorage.setItem("z2-" + fechaKey, valor);
+function getEntrenos(d) {
+  try {
+    return JSON.parse(localStorage.getItem(claveSemana(d))) || [];
+  } catch {
+    return [];
+  }
+}
+function setEntrenos(d, arr) {
+  localStorage.setItem(claveSemana(d), JSON.stringify(arr));
 }
 function getFechaInicio(datos) {
   return localStorage.getItem("fechaInicio") || datos.fechaInicio;
@@ -76,98 +76,147 @@ function render(datos) {
 
   const semanasPasadas = Math.floor((hoy - inicio) / (7 * 86400000));
   const idx = semanasPasadas % 4;
-  const numSemana = idx + 1;
   const clavePlan = idx % 2 === 0 ? "1y3" : "2y4";
   document.getElementById("semana").textContent =
-    `Semana ${numSemana} · plan «${clavePlan === "1y3" ? "1 y 3" : "2 y 4"}»`;
+    `Semana ${idx + 1} · plan «${clavePlan === "1y3" ? "1 y 3" : "2 y 4"}»`;
 
   const nombreDia = DIAS[hoy.getDay()];
   document.getElementById("titulo-dia").textContent = nombreDia;
 
   if (hoy.getDay() === 0) {
-    cont.innerHTML = `
-      <div class="libre">
-        <span class="emoji">🎉</span>
-        <h2>Día libre</h2>
-        <p>Hoy toca «vida social»: come con consciencia y sin atracones,
-        disfrutando eso que te ha apetecido durante la semana. Prioriza opciones de calidad.</p>
-      </div>`;
+    cont.innerHTML = diaLibre(hoy);
+    enlazarEntrenos(datos, hoy);
     return;
   }
 
   cont.innerHTML = tarjetasDelDia(datos, hoy, clavePlan, nombreDia);
-  enlazarSelector(datos);
+  enlazarEntrenos(datos, hoy);
+}
+
+function diaLibre(hoy) {
+  // aviso si mañana (lunes) hay entreno matutino
+  const ent = getEntrenos(new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1));
+  const avisoLunes = ent.some(e => e.dia === 1 && e.momento === "manana")
+    ? `<div class="leyenda">🔶 Mañana entrenas por la mañana → la cena de hoy va <b>sin carbos</b>.</div>`
+    : "";
+  return `
+    <div class="libre">
+      <span class="emoji">🎉</span>
+      <h2>Día libre</h2>
+      <p>Hoy toca «vida social»: come con consciencia y sin atracones,
+      disfrutando eso que te ha apetecido durante la semana. Prioriza opciones de calidad.</p>
+    </div>${avisoLunes}`;
+}
+
+function calcularSinCarbos(hoy) {
+  const dow = hoy.getDay();            // 1..6 en días laborables
+  const ent = getEntrenos(hoy);
+  const sesionHoy = ent.find(e => e.dia === dow);
+  const manana = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1);
+  const entManana = getEntrenos(manana);
+  const dowManana = manana.getDay();
+  return {
+    entrenaHoy: sesionHoy || null,
+    desayuno: !!sesionHoy,                                  // desayuno sin CHO si entrenas hoy
+    almuerzo: !!(sesionHoy && sesionHoy.momento === "tarde"), // tarde -> comida sin carbos
+    // cena sin carbos si MAÑANA entrenas por la mañana (víspera)
+    cena: entManana.some(e => e.dia === dowManana && e.momento === "manana"),
+  };
 }
 
 function tarjetasDelDia(datos, hoy, clavePlan, nombreDia) {
   const dia = datos.semanas[clavePlan][nombreDia];
   const c = datos.comun;
-  const hoyKey = clave(hoy);
-  const z2 = getZ2(hoyKey);
+  const s = calcularSinCarbos(hoy);
 
-  // ¿qué comidas van sin carbos, según la regla de entreno?
-  // Entreno Z2 -> desayuno sin CHO siempre; mañana quita la cena, tarde la comida.
-  const entrena = z2 === "manana" || z2 === "tarde";
-  const desayunoSin = entrena;
-  const almuerzoSin = z2 === "tarde";
-  const cenaSin = z2 === "manana";
-
-  const desayunoTexto = desayunoSin ? c.desayunoSinCHO : c.desayunoConCHO;
+  const desayunoTexto = s.desayuno ? c.desayunoSinCHO : c.desayunoConCHO;
   const listaHTML = (arr) => "<ul>" + arr.map(x => `<li>${x}</li>`).join("") + "</ul>";
 
   const bloques = [
-    selectorEntreno(hoy),
+    panelEntrenos(hoy, s),
     c.alLevantarte ? tarjeta("🌅", "Al levantarte", `<p>${c.alLevantarte}</p>`, false) : "",
-    tarjeta("☕", "Desayuno", `<p>${desayunoTexto}</p>`, desayunoSin),
-    tarjeta("🍽️", "Almuerzo", opciones(dia.almuerzo, listaHTML), almuerzoSin),
+    tarjeta("☕", "Desayuno", `<p>${desayunoTexto}</p>`, s.desayuno),
+    tarjeta("🍽️", "Almuerzo", opciones(dia.almuerzo, listaHTML), s.almuerzo),
     c.merienda ? tarjeta("🍎", "Merienda", `<p>${c.merienda}</p>`, false) : "",
-    tarjeta("🌙", "Cena", opciones(dia.cena, listaHTML), cenaSin),
+    tarjeta("🌙", "Cena", opciones(dia.cena, listaHTML), s.cena),
   ];
-  const leyenda = (desayunoSin || almuerzoSin || cenaSin)
-    ? `<p class="leyenda">🔶 <b>Sin carbos</b>: prescinde del hidrato (arroz, patata, pasta, quinoa, pan, legumbre) en ese plato.</p>`
-    : "";
+  let leyenda = "";
+  if (s.desayuno || s.almuerzo || s.cena) {
+    leyenda = `<p class="leyenda">🔶 <b>Sin carbos</b>: prescinde del hidrato (arroz, patata, pasta, quinoa, pan, legumbre) en ese plato.`;
+    if (s.cena && !s.entrenaHoy) leyenda += ` La cena va sin carbos porque <b>mañana entrenas por la mañana</b>.`;
+    leyenda += `</p>`;
+  }
   return bloques.join("") + leyenda;
 }
 
-function selectorEntreno(hoy) {
-  const hoyKey = clave(hoy);
-  const semana = diasDeLaSemana(hoy);
-  const hechos = semana.filter(k => getZ2(k) !== "no").length;
-  const z2 = getZ2(hoyKey);
-  const hoyEsEntreno = z2 !== "no";
-  const completados = hechos >= ENTRENOS_SEMANA && !hoyEsEntreno && !forzarSelector;
-
-  if (completados) {
-    return `<div class="entreno hecho">
-      <p>💪 Ya has registrado tus <b>${ENTRENOS_SEMANA} entrenos Z2</b> de esta semana. Descansa.</p>
-      <button type="button" data-z2="__abrir">¿Entrenas hoy igualmente?</button>
-    </div>`;
+// ---- panel de entrenos de la semana ----
+function panelEntrenos(hoy, s) {
+  const ent = getEntrenos(hoy);
+  let notaHoy;
+  if (s.entrenaHoy) {
+    notaHoy = `Hoy entrenas Z2 ${s.entrenaHoy.momento === "manana" ? "🌅 por la mañana" : "🌇 por la tarde"}.`;
+  } else if (s.cena) {
+    notaHoy = "Hoy no entrenas, pero mañana sí por la mañana.";
+  } else {
+    notaHoy = "Hoy no entrenas.";
   }
 
-  const restantes = Math.max(0, ENTRENOS_SEMANA - hechos + (hoyEsEntreno ? 1 : 0));
-  const btn = (val, txt) =>
-    `<button type="button" data-z2="${val}" class="${z2 === val ? "sel" : ""}">${txt}</button>`;
+  if (!editorAbierto) {
+    const resumen = ent.length
+      ? ent.map(e => `${DIAS_LAB[e.dia - 1]} ${e.momento === "manana" ? "🌅" : "🌇"}`).join(" · ")
+      : "Sin definir todavía";
+    return `<div class="entreno">
+      <p class="preg">🏃 Entrenos Z2 de esta semana</p>
+      <p class="resumen">${resumen}</p>
+      <p class="nota-hoy">${notaHoy}</p>
+      <button type="button" data-ent="toggle">${ent.length ? "Editar" : "Configurar"}</button>
+    </div>`;
+  }
   return `<div class="entreno">
-    <p class="preg">¿Entrenas hoy en Zona 2? <span class="cont">(${restantes} por hacer esta semana)</span></p>
-    <div class="ops">
-      ${btn("no", "No entreno")}
-      ${btn("manana", "🌅 Por la mañana")}
-      ${btn("tarde", "🌇 Por la tarde")}
+    <p class="preg">🏃 Tus 2 entrenos Z2 de esta semana</p>
+    ${slotEntreno(0, ent[0])}
+    ${slotEntreno(1, ent[1])}
+    <div class="ent-acciones">
+      <button type="button" data-ent="guardar">Guardar</button>
+      <button type="button" data-ent="toggle" class="secundario">Cancelar</button>
     </div>
   </div>`;
 }
 
-function enlazarSelector(datos) {
-  document.querySelectorAll(".entreno [data-z2]").forEach(b => {
+function slotEntreno(i, e) {
+  const cur = e || {};
+  const dias = ['<option value="">— sin entreno —</option>']
+    .concat(DIAS_LAB.map((d, idx) =>
+      `<option value="${idx + 1}" ${cur.dia === idx + 1 ? "selected" : ""}>${d}</option>`))
+    .join("");
+  return `<div class="slot">
+    <label>Entreno ${i + 1}</label>
+    <select class="ent-dia" data-i="${i}">${dias}</select>
+    <select class="ent-mom" data-i="${i}">
+      <option value="manana" ${cur.momento === "manana" ? "selected" : ""}>🌅 Mañana</option>
+      <option value="tarde" ${cur.momento === "tarde" ? "selected" : ""}>🌇 Tarde</option>
+    </select>
+  </div>`;
+}
+
+function enlazarEntrenos(datos, hoy) {
+  document.querySelectorAll("[data-ent]").forEach(b => {
     b.addEventListener("click", () => {
-      const val = b.getAttribute("data-z2");
-      if (val === "__abrir") { forzarSelector = true; render(datos); return; }
-      const hoy = vistaFecha
-        ? aMedianoche(parseFecha(vistaFecha))
-        : aMedianoche(new Date());
-      setZ2(clave(hoy), val);
-      forzarSelector = false;
-      render(datos);
+      const accion = b.dataset.ent;
+      if (accion === "toggle") {
+        editorAbierto = !editorAbierto;
+        render(datos);
+      } else if (accion === "guardar") {
+        const arr = [];
+        [0, 1].forEach(i => {
+          const dia = Number(document.querySelector(`.ent-dia[data-i="${i}"]`).value);
+          const momento = document.querySelector(`.ent-mom[data-i="${i}"]`).value;
+          if (dia) arr.push({ dia, momento });
+        });
+        setEntrenos(hoy, arr);
+        editorAbierto = false;
+        render(datos);
+      }
     });
   });
 }
@@ -193,7 +242,7 @@ function bannerPreview(datos, esPreview) {
     : "";
   const volver = document.getElementById("volver-hoy");
   if (volver) volver.addEventListener("click", () => {
-    vistaFecha = null; forzarSelector = false;
+    vistaFecha = null; editorAbierto = false;
     document.getElementById("ver-otro").hidden = true;
     render(datos);
   });
@@ -206,7 +255,7 @@ function initVerOtro(datos) {
   const input = document.getElementById("ver-fecha");
   btn.addEventListener("click", () => { panel.hidden = !panel.hidden; });
   input.addEventListener("change", () => {
-    if (input.value) { vistaFecha = input.value; forzarSelector = false; render(datos); }
+    if (input.value) { vistaFecha = input.value; editorAbierto = false; render(datos); }
   });
 }
 
