@@ -8,6 +8,14 @@ Calcula sola en qué semana del ciclo estás y alterna entre los dos PDFs
 Abres la web (o el acceso directo del móvil) y te muestra desayuno, almuerzo,
 merienda y cena de hoy. Los domingos marca "día libre".
 
+- **Entreno Zona 2**: cada día te pregunta si entrenas en Z2 y cuándo
+  (No / Por la mañana / Por la tarde). Según tu respuesta marca qué comidas van
+  **🔶 sin carbos** y qué desayuno usar:
+  - **Z2 por la mañana** → desayuno sin CHO (yogur) + cena sin carbos.
+  - **Z2 por la tarde** → comida + cena sin carbos.
+  - **Sin entreno** → todo normal (con CHO).
+  Cuando registras tus **2 entrenos Z2** de la semana, deja de preguntar hasta
+  el lunes siguiente.
 - **Ver otro día**: botón abajo para mirar qué toca cualquier fecha.
 - **Ajustes**: ahí cambias la fecha de inicio cuando empieza una dieta nueva.
   (Se guarda en tu navegador/móvil, no hace falta tocar nada más.)
@@ -21,6 +29,10 @@ merienda y cena de hoy. Los domingos marca "día libre".
      a la papelera): tienes que escribir `BORRAR` para confirmar.
    - **Escanea** los PDFs nuevos y te pide el lunes en que empiezas.
    - Si un PDF está escaneado como imagen (sin texto), te avisa y no toca nada.
+   - **Ojo**: el escáner lee los platos y los dos desayunos, pero **no ve el
+     color naranja** del PDF. La app no lo necesita (usa tu entreno Z2 para
+     decidir qué va sin carbos). Si en el futuro cambia la lógica de la dieta,
+     avísame para adaptarla.
 2. Sube los cambios a GitHub:
    ```
    git add -A && git commit -m "Actualizar dieta" && git push

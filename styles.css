@@ -73,11 +73,65 @@ header { text-align: center; margin-bottom: clamp(18px, 4vw, 28px); }
   #contenido .aviso { grid-column: 1 / -1; }
 }
 
+/* selector de entreno Z2 */
+.entreno {
+  grid-column: 1 / -1;
+  background: var(--verde-osc);
+  color: #fff;
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: var(--sombra);
+}
+.entreno .preg { font-weight: 600; margin-bottom: 10px; }
+.entreno .cont { font-weight: 400; opacity: .8; font-size: .85rem; }
+.entreno .ops { display: flex; flex-wrap: wrap; gap: 8px; }
+.entreno .ops button {
+  flex: 1 1 auto;
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+  padding: 12px 10px;
+  font-size: .92rem;
+}
+.entreno .ops button.sel {
+  background: #fff;
+  color: var(--verde-osc);
+  font-weight: 700;
+}
+.entreno.hecho { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.entreno.hecho button {
+  background: rgba(255, 255, 255, .16);
+  color: #fff;
+  font-size: .82rem;
+  padding: 8px 12px;
+}
+
 .comida {
   background: var(--tarjeta);
   border-radius: 16px;
   padding: clamp(14px, 3vw, 20px);
   box-shadow: var(--sombra);
+}
+.comida.sin-carbos { border: 1.5px solid #f0a44a; background: #fff8f0; }
+.comida .badge {
+  margin-left: auto;
+  background: #f0a44a;
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  text-transform: none;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.leyenda {
+  grid-column: 1 / -1;
+  font-size: .85rem;
+  color: var(--gris);
+  background: #fff8f0;
+  border: 1px solid #f5d9b8;
+  border-radius: 12px;
+  padding: 10px 14px;
 }
 
 .comida h2 {

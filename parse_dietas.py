@@ -144,15 +144,30 @@ def parsear_menu(texto):
     return menu
 
 
+def _juntar(txt):
+    return " ".join(p.strip() for p in txt.splitlines() if p.strip())
+
+
 def parsear_comun(texto):
     comun = {}
     m = re.search(r"Al levantarte\s+(.+)", texto)
     if m:
         comun["alLevantarte"] = m.group(1).strip()
-    m = re.search(r"Desayuno\s+(.+?)\n\s*\n?\s*Merienda", texto, re.S)
-    if m:
-        comun["desayuno"] = " ".join(
-            p.strip() for p in m.group(1).splitlines() if p.strip())
+
+    # Desayuno con dos opciones (Opción con CHO / Opción sin CHO)
+    con = re.search(r"Opci[oó]n con CHO\s*[→>-]*\s*(.+?)(?=Opci[oó]n sin CHO)",
+                    texto, re.S | re.I)
+    sin = re.search(r"Opci[oó]n sin CHO\s*[→>-]*\s*(.+?)(?=\*|Merienda)",
+                    texto, re.S | re.I)
+    if con and sin:
+        comun["desayunoConCHO"] = _juntar(con.group(1))
+        comun["desayunoSinCHO"] = _juntar(sin.group(1))
+    else:
+        # formato antiguo: un único desayuno
+        m = re.search(r"Desayuno\s+(.+?)\n\s*\n?\s*Merienda", texto, re.S)
+        if m:
+            comun["desayuno"] = _juntar(m.group(1))
+
     m = re.search(r"Merienda\s+(.+)", texto)
     if m:
         comun["merienda"] = m.group(1).strip()

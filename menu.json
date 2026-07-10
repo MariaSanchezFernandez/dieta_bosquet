@@ -1,122 +1,63 @@
 {
-  "fechaInicio": "2026-06-15",
+  "fechaInicio": "2026-07-13",
+  "intervencion": 7,
   "comun": {
     "alLevantarte": "Vaso de agua",
-    "desayuno": "½ tostada con AOVE + tomate + Jamón cocido / Jamón serrano / atún en conserva / huevo (1-1,5 unds) + Agua + Pieza de fruta al gusto",
+    "desayunoConCHO": "½ tostada con AOVE + tomate + Jamón cocido / Jamón serrano / atún en conserva / huevos (1–1.5 huevos) + Agua + Pieza de fruta al gusto",
+    "desayunoSinCHO": "Yogur griego natural con nueces picadas",
     "merienda": "Pieza de fruta variada a lo largo de la semana y a ser posible de temporada"
   },
   "semanas": {
     "1y3": {
       "Lunes": {
-        "almuerzo": [
-          "Guiso de lentejas con verduras al gusto y arroz"
-        ],
-        "cena": [
-          "Cazuela de habitas baby con taquitos de jamón (sin gamba) y huevo duro"
-        ]
+        "almuerzo": ["Ensalada de garbanzos con arroz (garbanzos cocidos, arroz cocido, tomate, cebolla, zanahoria, maíz, pepino)"],
+        "cena": ["Revuelto (huevo) de espárragos, setas y jamón serrano"]
       },
       "Martes": {
-        "almuerzo": [
-          "Merluza a la riojana",
-          "Parrillada de verduras asadas al gusto"
-        ],
-        "cena": [
-          "Ensalada canónigos, espinacas baby, tomate, zanahoria rallada, pepino, pimiento verde, huevo cocido y pollo troceado"
-        ]
+        "almuerzo": ["Salteado de verduras de tu gusto con curry en polvo", "Salmón a la plancha con ajo y perejil"],
+        "cena": ["Alitas de pollo al horno", "Salmorejo"]
       },
       "Miércoles": {
-        "almuerzo": [
-          "Ensalada de garbanzos con verduras al gusto y huevo cocido"
-        ],
-        "cena": [
-          "Ajoblanco",
-          "Pechuga de pavo a la plancha con espárragos trigueros"
-        ]
+        "almuerzo": ["Gazpacho", "Lentejas guisadas con verduras al gusto y patata"],
+        "cena": ["Chuleta de cerdo a la plancha", "Ensalada de lechuga, tomate y pepino"]
       },
       "Jueves": {
-        "almuerzo": [
-          "Wok de calabacín, champiñón, pimiento rojo, salsa de soja, quinoa y ternera troceada"
-        ],
-        "cena": [
-          "Gazpacho de sandía",
-          "Brocheta de salmón, calabacín, pimiento verde y AOVE"
-        ]
+        "almuerzo": ["Secreto de cerdo a la plancha", "Pisto de verduras variadas"],
+        "cena": ["Calamar a la plancha con ajo y perejil", "Salteado de calabacín, pimiento variado y quinoa"]
       },
       "Viernes": {
-        "almuerzo": [
-          "Dorada/lubina a la plancha",
-          "Salteado de quinoa con brócoli, zanahoria y cebolla"
-        ],
-        "cena": [
-          "Pechuga de pollo a la plancha",
-          "Salteado de ñoquis de patata con verduras al gusto"
-        ]
+        "almuerzo": ["Salmorejo", "Ensalada de habas con picadillo de tomate, cebolla, pepino, pimiento y maíz"],
+        "cena": ["Ensalada de lechuga, tomate, espárragos blancos, zanahoria rallada, cebolla, remolacha y atún al natural en conserva"]
       },
       "Sábado": {
-        "almuerzo": [
-          "Pasta de lenteja con cebolla, zanahoria, calabacín y pollo troceado"
-        ],
-        "cena": [
-          "Gazpacho de sandía",
-          "Cinta de lomo de cerdo a la plancha con ajo y perejil con calabacín, zanahoria y maíz"
-        ]
+        "almuerzo": ["Salteado de pechuga de pavo en tiras con zanahoria, calabacín, puerro y arroz"],
+        "cena": ["Merluza a la plancha con ajo, perejil y limón", "Ensalada de patata, tomate, cebolla morada y zanahoria rallada"]
       }
     },
     "2y4": {
       "Lunes": {
-        "almuerzo": [
-          "Cocido de garbanzos con verduras al gusto y arroz"
-        ],
-        "cena": [
-          "Ensalada de lechuga, tomate, maíz, espárragos blancos y pollo troceado"
-        ]
+        "almuerzo": ["Gazpacho", "Ensalada de garbanzos con verduras al gusto"],
+        "cena": ["Salmón al horno con brócoli y zanahoria"]
       },
       "Martes": {
-        "almuerzo": [
-          "Lubina a la plancha con ajo, perejil y limón",
-          "Pisto de verduras al gusto"
-        ],
-        "cena": [
-          "Salmorejo",
-          "Salteado de pollo en tiras con berenjena y curry en polvo"
-        ]
+        "almuerzo": ["Atún a la plancha/parrilla especiado con eneldo y ajo en polvo", "Ensalada de verduras al gusto"],
+        "cena": ["Tortilla francesa de pavo", "Quinoa salteada con guisantes y puerro"]
       },
       "Miércoles": {
-        "almuerzo": [
-          "Pasta de lentejas con sofrito de verduras al gusto y atún en conserva"
-        ],
-        "cena": [
-          "Gazpacho",
-          "Revuelto de huevos, setas y jamón cocido"
-        ]
+        "almuerzo": ["Cocido de garbanzos con zanahoria, judías verdes y patata"],
+        "cena": ["Tortilla francesa rellena de salmón ahumado, queso tierno, espinacas baby y canónigos"]
       },
       "Jueves": {
-        "almuerzo": [
-          "Merluza en salsa verde (perejil, ajo y AOVE) a la plancha",
-          "Salteado de guisantes y espárragos con quinoa"
-        ],
-        "cena": [
-          "Lomo de cerdo a la plancha",
-          "Menestra de verduras al gusto"
-        ]
+        "almuerzo": ["Secreto/pluma de cerdo a la parrilla", "Parrillada de verduras asadas al gusto"],
+        "cena": ["Pechuga de pavo troceada salteada con calabacín, cebolla, pimiento rojo y quinoa"]
       },
       "Viernes": {
-        "almuerzo": [
-          "Ensalada de garbanzos con tomate, pepino, maíz, zanahoria y huevo cocido"
-        ],
-        "cena": [
-          "Ensalada de judías verdes con tomate, cebolleta y melva al natural desmenuzada"
-        ]
+        "almuerzo": ["Ensalada de lentejas, cebolla, pepino, cherrys y maíz"],
+        "cena": ["Ensalada de patata cocida, cebolleta, judías verdes cocidas, zanahoria rallada y melva en conserva"]
       },
       "Sábado": {
-        "almuerzo": [
-          "Tortilla de patata y cebolla",
-          "Salmorejo con taquitos de jamón"
-        ],
-        "cena": [
-          "Pez espada a la plancha",
-          "Arroz integral salteado con champiñones, ajo y perejil"
-        ]
+        "almuerzo": ["Dorada a la plancha", "Ensalada de pasta con verduras al gusto"],
+        "cena": ["Gazpacho", "Tortilla de champiñones y jamón cocido"]
       }
     }
   }
