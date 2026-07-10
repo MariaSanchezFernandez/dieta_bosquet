@@ -7,6 +7,7 @@ const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
 
 let vistaFecha = null;      // "ver otro día" (null = hoy)
 let editorAbierto = false;  // panel de configurar entrenos abierto
+let entrenosDefecto = [];   // config por defecto (de menu.json)
 
 // ---- utilidades de fecha ----
 function aMedianoche(d) {
@@ -33,8 +34,10 @@ function claveSemana(d) {
   return "entrenos-" + clave(lunesDe(d));
 }
 function getEntrenos(d) {
+  const raw = localStorage.getItem(claveSemana(d));
+  if (raw === null) return entrenosDefecto;   // semana sin configurar -> por defecto
   try {
-    return JSON.parse(localStorage.getItem(claveSemana(d))) || [];
+    return JSON.parse(raw) || [];
   } catch {
     return [];
   }
@@ -282,7 +285,10 @@ function initAjustes(datos) {
 
 fetch("menu.json")
   .then(r => r.json())
-  .then(datos => { render(datos); initVerOtro(datos); initAjustes(datos); })
+  .then(datos => {
+    entrenosDefecto = datos.entrenosPorDefecto || [];
+    render(datos); initVerOtro(datos); initAjustes(datos);
+  })
   .catch(() => {
     document.getElementById("titulo-dia").textContent = "Error";
     document.getElementById("contenido").innerHTML =

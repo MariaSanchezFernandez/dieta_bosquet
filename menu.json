@@ -1,6 +1,10 @@
 {
   "fechaInicio": "2026-07-13",
   "intervencion": 7,
+  "entrenosPorDefecto": [
+    { "dia": 2, "momento": "tarde" },
+    { "dia": 5, "momento": "manana" }
+  ],
   "comun": {
     "alLevantarte": "Vaso de agua",
     "desayunoConCHO": "½ tostada con AOVE + tomate + Jamón cocido / Jamón serrano / atún en conserva / huevos (1–1.5 huevos) + Agua + Pieza de fruta al gusto",
