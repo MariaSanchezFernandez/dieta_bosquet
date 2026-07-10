@@ -8,17 +8,22 @@ Calcula sola en qué semana del ciclo estás y alterna entre los dos PDFs
 Abres la web (o el acceso directo del móvil) y te muestra desayuno, almuerzo,
 merienda y cena de hoy. Los domingos marca "día libre".
 
-- **Entreno Zona 2**: al empezar la semana configuras tus **2 entrenos Z2**
-  (qué día y si mañana/tarde), en el panel «🏃 Entrenos Z2 de esta semana».
-  La app coloca sola las comidas **🔶 sin carbos**:
+- **Entreno Zona 2**: por defecto configurado como **Martes por la tarde** y
+  **Viernes por la mañana** (editable en el panel «🏃 Entrenos Z2 de esta
+  semana» si algún día cambia). La app coloca sola las comidas **🔶 sin
+  carbos**:
   - **Z2 por la mañana** → desayuno sin CHO (yogur) + **cena de la víspera**
     (la noche anterior) sin carbos.
   - **Z2 por la tarde** → desayuno sin CHO (yogur) + **comida** sin carbos.
   - Los días sin entreno van normales (con CHO).
 
-  Esto reproduce el naranja del PDF: cena naranja = víspera de un entreno de
-  mañana; comida naranja = día de entreno por la tarde. Como configuras solo tus
-  2 sesiones reales, no hay comidas sin carbos "sueltas".
+  El PDF ya diseña un plato bajo en carbohidratos en días fijos (marcados en
+  naranja: cada `menu.json` guarda qué comida —almuerzo o cena— es ese plato,
+  campo `naranja`). Si el día que necesitas sin carbos no coincide con el
+  diseño del PDF, la app **intercambia el almuerzo y la cena de ese día**
+  para que el plato ya pensado sin carbohidratos caiga en la comida correcta
+  (se avisa con «(intercambiado con…)»). Si ese día no hay ningún plato
+  diseñado sin carbos, usa el aviso genérico de "quita el hidrato".
 - **Ver otro día**: botón abajo para mirar qué toca cualquier fecha.
 - **Ajustes**: ahí cambias la fecha de inicio cuando empieza una dieta nueva.
   (Se guarda en tu navegador/móvil, no hace falta tocar nada más.)
@@ -32,10 +37,12 @@ merienda y cena de hoy. Los domingos marca "día libre".
      a la papelera): tienes que escribir `BORRAR` para confirmar.
    - **Escanea** los PDFs nuevos y te pide el lunes en que empiezas.
    - Si un PDF está escaneado como imagen (sin texto), te avisa y no toca nada.
-   - **Ojo**: el escáner lee los platos y los dos desayunos, pero **no ve el
-     color naranja** del PDF. La app no lo necesita (usa tu entreno Z2 para
-     decidir qué va sin carbos). Si en el futuro cambia la lógica de la dieta,
-     avísame para adaptarla.
+   - **Ojo**: el escáner automático (`pdftotext`) lee los platos y los dos
+     desayunos, pero **no puede ver el color naranja** del PDF (es una imagen,
+     no texto). Ese dato —qué comida de cada día es la diseñada sin
+     carbohidratos— hay que pasármelo a mano (mándame capturas de la tabla del
+     menú semanal, como hicimos la primera vez) para que lo añada al
+     `menu.json` (campo `naranja` de cada día).
 2. Sube los cambios a GitHub:
    ```
    git add -A && git commit -m "Actualizar dieta" && git push

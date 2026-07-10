@@ -15,53 +15,65 @@
     "1y3": {
       "Lunes": {
         "almuerzo": ["Ensalada de garbanzos con arroz (garbanzos cocidos, arroz cocido, tomate, cebolla, zanahoria, maíz, pepino)"],
-        "cena": ["Revuelto (huevo) de espárragos, setas y jamón serrano"]
+        "cena": ["Revuelto (huevo) de espárragos, setas y jamón serrano"],
+        "naranja": "cena"
       },
       "Martes": {
         "almuerzo": ["Salteado de verduras de tu gusto con curry en polvo", "Salmón a la plancha con ajo y perejil"],
-        "cena": ["Alitas de pollo al horno", "Salmorejo"]
+        "cena": ["Alitas de pollo al horno", "Salmorejo"],
+        "naranja": "almuerzo"
       },
       "Miércoles": {
         "almuerzo": ["Gazpacho", "Lentejas guisadas con verduras al gusto y patata"],
-        "cena": ["Chuleta de cerdo a la plancha", "Ensalada de lechuga, tomate y pepino"]
+        "cena": ["Chuleta de cerdo a la plancha", "Ensalada de lechuga, tomate y pepino"],
+        "naranja": "cena"
       },
       "Jueves": {
         "almuerzo": ["Secreto de cerdo a la plancha", "Pisto de verduras variadas"],
-        "cena": ["Calamar a la plancha con ajo y perejil", "Salteado de calabacín, pimiento variado y quinoa"]
+        "cena": ["Calamar a la plancha con ajo y perejil", "Salteado de calabacín, pimiento variado y quinoa"],
+        "naranja": "almuerzo"
       },
       "Viernes": {
         "almuerzo": ["Salmorejo", "Ensalada de habas con picadillo de tomate, cebolla, pepino, pimiento y maíz"],
-        "cena": ["Ensalada de lechuga, tomate, espárragos blancos, zanahoria rallada, cebolla, remolacha y atún al natural en conserva"]
+        "cena": ["Ensalada de lechuga, tomate, espárragos blancos, zanahoria rallada, cebolla, remolacha y atún al natural en conserva"],
+        "naranja": null
       },
       "Sábado": {
         "almuerzo": ["Salteado de pechuga de pavo en tiras con zanahoria, calabacín, puerro y arroz"],
-        "cena": ["Merluza a la plancha con ajo, perejil y limón", "Ensalada de patata, tomate, cebolla morada y zanahoria rallada"]
+        "cena": ["Merluza a la plancha con ajo, perejil y limón", "Ensalada de patata, tomate, cebolla morada y zanahoria rallada"],
+        "naranja": null
       }
     },
     "2y4": {
       "Lunes": {
         "almuerzo": ["Gazpacho", "Ensalada de garbanzos con verduras al gusto"],
-        "cena": ["Salmón al horno con brócoli y zanahoria"]
+        "cena": ["Salmón al horno con brócoli y zanahoria"],
+        "naranja": "cena"
       },
       "Martes": {
         "almuerzo": ["Atún a la plancha/parrilla especiado con eneldo y ajo en polvo", "Ensalada de verduras al gusto"],
-        "cena": ["Tortilla francesa de pavo", "Quinoa salteada con guisantes y puerro"]
+        "cena": ["Tortilla francesa de pavo", "Quinoa salteada con guisantes y puerro"],
+        "naranja": "almuerzo"
       },
       "Miércoles": {
         "almuerzo": ["Cocido de garbanzos con zanahoria, judías verdes y patata"],
-        "cena": ["Tortilla francesa rellena de salmón ahumado, queso tierno, espinacas baby y canónigos"]
+        "cena": ["Tortilla francesa rellena de salmón ahumado, queso tierno, espinacas baby y canónigos"],
+        "naranja": "cena"
       },
       "Jueves": {
         "almuerzo": ["Secreto/pluma de cerdo a la parrilla", "Parrillada de verduras asadas al gusto"],
-        "cena": ["Pechuga de pavo troceada salteada con calabacín, cebolla, pimiento rojo y quinoa"]
+        "cena": ["Pechuga de pavo troceada salteada con calabacín, cebolla, pimiento rojo y quinoa"],
+        "naranja": "almuerzo"
       },
       "Viernes": {
         "almuerzo": ["Ensalada de lentejas, cebolla, pepino, cherrys y maíz"],
-        "cena": ["Ensalada de patata cocida, cebolleta, judías verdes cocidas, zanahoria rallada y melva en conserva"]
+        "cena": ["Ensalada de patata cocida, cebolleta, judías verdes cocidas, zanahoria rallada y melva en conserva"],
+        "naranja": null
       },
       "Sábado": {
         "almuerzo": ["Dorada a la plancha", "Ensalada de pasta con verduras al gusto"],
-        "cena": ["Gazpacho", "Tortilla de champiñones y jamón cocido"]
+        "cena": ["Gazpacho", "Tortilla de champiñones y jamón cocido"],
+        "naranja": null
       }
     }
   }
