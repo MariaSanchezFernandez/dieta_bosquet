@@ -7,10 +7,8 @@
   ],
   "ordenDias": ["Lunes", "Martes", "Sábado", "Miércoles", "Jueves", "Viernes"],
   "comun": {
-    "alLevantarte": "Vaso de agua",
     "desayunoConCHO": "½ tostada con AOVE + tomate + Jamón cocido / Jamón serrano / atún en conserva / huevos (1–1.5 huevos) + Agua + Pieza de fruta al gusto",
-    "desayunoSinCHO": "Yogur griego natural con nueces picadas",
-    "merienda": "Pieza de fruta variada a lo largo de la semana y a ser posible de temporada"
+    "desayunoSinCHO": "Yogur griego natural con nueces picadas"
   },
   "semanas": {
     "1y3": {

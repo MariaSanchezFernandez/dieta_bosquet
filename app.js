@@ -165,10 +165,8 @@ function tarjetasDelDia(datos, hoy, clavePlan, nombreDiaReal) {
   const bloques = [
     panelEntrenos(hoy, r),
     avisoMenu,
-    c.alLevantarte ? tarjeta("🌅", "Al levantarte", `<p>${c.alLevantarte}</p>`, false) : "",
     tarjeta("☕", "Desayuno", `<p>${desayunoTexto}</p>`, r.desayunoSin),
     tarjeta("🍽️", "Almuerzo", opciones(r.almuerzo, listaHTML), r.necesitaAlmuerzo),
-    c.merienda ? tarjeta("🍎", "Merienda", `<p>${c.merienda}</p>`, false) : "",
     tarjeta("🌙", "Cena", opciones(r.cena, listaHTML), r.necesitaCena),
   ];
 
