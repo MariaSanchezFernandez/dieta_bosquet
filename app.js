@@ -106,9 +106,11 @@ function tarjetasDelDia(datos, hoy, clavePlan, nombreDia) {
   const z2 = getZ2(hoyKey);
 
   // ¿qué comidas van sin carbos, según la regla de entreno?
-  const desayunoSin = z2 === "manana";
+  // Entreno Z2 -> desayuno sin CHO siempre; mañana quita la cena, tarde la comida.
+  const entrena = z2 === "manana" || z2 === "tarde";
+  const desayunoSin = entrena;
   const almuerzoSin = z2 === "tarde";
-  const cenaSin = z2 === "manana" || z2 === "tarde";
+  const cenaSin = z2 === "manana";
 
   const desayunoTexto = desayunoSin ? c.desayunoSinCHO : c.desayunoConCHO;
   const listaHTML = (arr) => "<ul>" + arr.map(x => `<li>${x}</li>`).join("") + "</ul>";

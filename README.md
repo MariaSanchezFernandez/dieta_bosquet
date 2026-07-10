@@ -12,8 +12,11 @@ merienda y cena de hoy. Los domingos marca "día libre".
   (No / Por la mañana / Por la tarde). Según tu respuesta marca qué comidas van
   **🔶 sin carbos** y qué desayuno usar:
   - **Z2 por la mañana** → desayuno sin CHO (yogur) + cena sin carbos.
-  - **Z2 por la tarde** → comida + cena sin carbos.
+  - **Z2 por la tarde** → desayuno sin CHO (yogur) + comida sin carbos.
   - **Sin entreno** → todo normal (con CHO).
+
+  Esto reproduce el naranja del PDF: cena naranja = día de entreno por la
+  mañana; comida naranja = día de entreno por la tarde.
   Cuando registras tus **2 entrenos Z2** de la semana, deja de preguntar hasta
   el lunes siguiente.
 - **Ver otro día**: botón abajo para mirar qué toca cualquier fecha.
