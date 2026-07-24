@@ -5,9 +5,10 @@ const DIAS_LAB = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado
 const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
-let vistaFecha = null;   // "ver otro día" (null = hoy)
-let setupAbierto = false; // pantalla de configurar semana visible
-let borrador = null;      // config en edición mientras el setup está abierto
+let vistaFecha = null;    // "ver otro día" (null = hoy)
+let setupAbierto = false; // pantalla de configurar/editar semana visible
+let borrador = null;      // config en edición mientras esa pantalla está abierta
+let filaExpandida = null; // índice (0..5) de la fila "qué como cada día" abierta para cambiarla
 
 // ---- utilidades de fecha ----
 function aMedianoche(d) {
@@ -26,6 +27,9 @@ function lunesDe(d) {
   const dow = (x.getDay() + 6) % 7; // 0 = lunes
   x.setDate(x.getDate() - dow);
   return x;
+}
+function fechaCorta(f) {
+  return `${f.getDate()} ${MESES[f.getMonth()].slice(0, 3)}`;
 }
 function getFechaInicio(datos) {
   return localStorage.getItem("fechaInicio") || datos.fechaInicio;
@@ -56,12 +60,6 @@ function getConfigSemana(d) {
 }
 function setConfigSemana(d, cfg) {
   localStorage.setItem(claveSemanaCfg(d), JSON.stringify(cfg));
-}
-
-function etiquetaNaranja(datos, plan, nombreDia) {
-  const d = datos.semanas[plan][nombreDia];
-  if (!d || !d.naranja) return "";
-  return d.naranja === "almuerzo" ? " 🔶 comida" : " 🔶 cena";
 }
 
 // ---- render ----
@@ -98,10 +96,10 @@ function render(datos) {
 
   const cfg = getConfigSemana(hoy);
   if (!cfg || setupAbierto) {
-    if (!borrador) abrirBorrador(datos, hoy, plan, cfg);
-    document.getElementById("titulo-dia").textContent = "Configurar semana";
-    cont.innerHTML = pantallaSetup(datos, hoy);
-    enlazarSetup(datos, hoy);
+    if (!borrador) abrirBorrador(datos, cfg);
+    document.getElementById("titulo-dia").textContent = cfg ? "Editar semana" : "Configurar semana";
+    cont.innerHTML = pantallaSetup(datos, hoy, plan, !cfg);
+    enlazarSetup(datos, hoy, plan, !cfg);
     return;
   }
 
@@ -114,7 +112,7 @@ function render(datos) {
   }
 
   cont.innerHTML = tarjetasDelDia(datos, hoy, plan, nombreDia, cfg);
-  enlazarEditarSemana(datos, hoy, plan, cfg);
+  enlazarEditarSemana(datos, hoy, cfg);
 }
 
 function diaLibre(hoy) {
@@ -215,104 +213,228 @@ function resumenSemana(cfg, r) {
   </div>`;
 }
 
-// ---- pantalla de configuración de la semana ----
-function abrirBorrador(datos, hoy, plan, cfgExistente) {
-  if (cfgExistente) {
-    borrador = { entrenos: cfgExistente.entrenos.map(e => ({ ...e })), orden: [...cfgExistente.orden] };
-    return;
+// ================= configurar / editar semana =================
+
+function abrirBorrador(datos, cfgExistente) {
+  const base = cfgExistente
+    ? cfgExistente.entrenos.map(e => ({ ...e }))
+    : (datos.entrenosPorDefecto || []).map(e => ({ ...e }));
+  while (base.length < 2) base.push({});
+  const orden = cfgExistente ? [...cfgExistente.orden] : [...DIAS_LAB];
+  borrador = { entrenos: base.slice(0, 2), orden };
+  filaExpandida = null;
+}
+
+// Ajusta "orden" para que, según los entrenos, el plato ya diseñado sin
+// carbohidratos (campo "naranja") caiga en el día que se necesita —
+// intercambiando esa posición con otro día que sí lo tenga (nunca copiando,
+// para no repetir el mismo menú dos veces en la semana). Es solo una
+// sugerencia automática; se puede corregir a mano después.
+function autoOrdenar(datos, plan, entrenos, ordenBase) {
+  const orden = [...ordenBase];
+  const dias = datos.semanas[plan];
+  const needsAlmuerzo = new Array(6).fill(false);
+  const needsCena = new Array(6).fill(false);
+  entrenos.forEach(e => {
+    if (!e || !e.dia || !e.momento) return;
+    const i = e.dia - 1;
+    if (e.momento === "tarde") needsAlmuerzo[i] = true;
+    else if (e.momento === "manana" && i > 0) needsCena[i - 1] = true;
+  });
+
+  const indiceParaIntercambiar = (meal, excluir) => {
+    // preferir una posición que no tenga a su vez otra necesidad propia
+    for (let j = 0; j < 6; j++) {
+      if (j === excluir || needsAlmuerzo[j] || needsCena[j]) continue;
+      if (dias[orden[j]].naranja === meal) return j;
+    }
+    for (let j = 0; j < 6; j++) {
+      if (j === excluir) continue;
+      if (dias[orden[j]].naranja === meal) return j;
+    }
+    return -1;
+  };
+
+  for (let i = 0; i < 6; i++) {
+    if (needsAlmuerzo[i] && dias[orden[i]].naranja !== "almuerzo") {
+      const j = indiceParaIntercambiar("almuerzo", i);
+      if (j !== -1) [orden[i], orden[j]] = [orden[j], orden[i]];
+    }
+    if (needsCena[i] && dias[orden[i]].naranja !== "cena") {
+      const j = indiceParaIntercambiar("cena", i);
+      if (j !== -1) [orden[i], orden[j]] = [orden[j], orden[i]];
+    }
   }
-  const entrenos = (datos.entrenosPorDefecto || []).map(e => ({ ...e }));
-  const orden = datos.ordenPorDefecto ? [...datos.ordenPorDefecto] : [...DIAS_LAB];
-  borrador = { entrenos, orden };
+  return orden;
 }
 
-function fechaCorta(f) {
-  return `${f.getDate()} ${MESES[f.getMonth()].slice(0, 3)}`;
-}
-
-function pantallaSetup(datos, hoy) {
-  const { plan } = calcularPlan(datos, hoy);
+function fechasDeLaSemana(hoy) {
   const lunes = lunesDe(hoy);
-  const fechasDia = DIAS_LAB.map((_, i) =>
+  return DIAS_LAB.map((_, i) =>
     fechaCorta(new Date(lunes.getFullYear(), lunes.getMonth(), lunes.getDate() + i)));
+}
 
+function pantallaSetup(datos, hoy, plan, esNueva) {
+  const fechasDia = fechasDeLaSemana(hoy);
   const slots = [0, 1].map(i => slotEntreno(i, borrador.entrenos[i], fechasDia)).join("");
 
-  const filasOrden = DIAS_LAB.map((diaReal, i) => {
-    const opciones = DIAS_LAB.map((fuente, j) => {
-      const sel = borrador.orden[i] === fuente ? "selected" : "";
-      return `<option value="${fuente}" ${sel}>${fuente} (${fechasDia[j]})${etiquetaNaranja(datos, plan, fuente)}</option>`;
-    }).join("");
-    return `<div class="orden-fila">
-      <label>${diaReal}<span class="fecha-corta">${fechasDia[i]}</span></label>
-      <select class="orden-select" data-i="${i}">${opciones}</select>
+  if (esNueva) {
+    return `<div class="setup">
+      <h2>🏃 Tus 2 entrenos Z2 esta semana</h2>
+      <p class="setup-ayuda">Colocamos solos el plato sin carbos donde toque. Si algún día quieres cambiar qué menú comes, podrás hacerlo luego en «Editar esta semana».</p>
+      ${slots}
+      <div class="setup-acciones">
+        <button type="button" data-setup="guardar-nueva">Guardar y ver hoy</button>
+      </div>
     </div>`;
-  }).join("");
+  }
 
+  const filas = DIAS_LAB.map((diaReal, i) => filaMenuDia(datos, plan, i, fechasDia)).join("");
   return `<div class="setup">
-    <h2>1. Tus 2 entrenos Z2 esta semana</h2>
+    <h2>🏃 Tus 2 entrenos Z2 esta semana</h2>
     ${slots}
 
-    <h2>2. Qué menú comes cada día</h2>
-    <p class="setup-ayuda">🔶 indica el plato ya diseñado sin carbohidratos: colócalo en el día que lo necesites según tus entrenos.</p>
-    ${filasOrden}
+    <h2>🍽️ Qué menú comes cada día</h2>
+    <p class="setup-ayuda">Ya está colocado el plato sin carbos donde toca. Cambia cualquier día si vas a comer otra cosa.</p>
+    ${filas}
 
     <div class="setup-acciones">
-      <button type="button" data-setup="guardar">Guardar y ver el día</button>
+      <button type="button" data-setup="recalcular" class="secundario">🔄 Recalcular según mis entrenos</button>
+      <button type="button" data-setup="guardar">Guardar cambios</button>
     </div>
   </div>`;
 }
 
-function leerEntrenosDeDOM() {
-  const arr = [];
-  [0, 1].forEach(i => {
-    const d = document.querySelector(`.ent-dia[data-i="${i}"]`);
-    const m = document.querySelector(`.ent-mom[data-i="${i}"]`);
-    if (d && d.value) arr.push({ dia: Number(d.value), momento: m.value });
-  });
-  return arr;
+function filaMenuDia(datos, plan, i, fechasDia) {
+  const dias = datos.semanas[plan];
+  const diaReal = DIAS_LAB[i];
+  const actual = borrador.orden[i];
+  const tagActual = etiquetaTag(dias[actual]);
+
+  if (filaExpandida !== i) {
+    return `<div class="menu-fila">
+      <div class="menu-fila-info">
+        <span class="menu-fila-dia">${diaReal}<span class="pill-fecha">${fechasDia[i]}</span></span>
+        <span class="menu-fila-actual">Come: <b>${actual}</b>${tagActual}</span>
+      </div>
+      <button type="button" class="cambiar" data-expandir="${i}">Cambiar</button>
+    </div>`;
+  }
+
+  const opciones = DIAS_LAB.map((fuente, j) => {
+    const sel = actual === fuente ? " sel" : "";
+    return `<button type="button" class="pill pill-menu${sel}" data-menu-fila="${i}" data-menu-dia="${fuente}">
+      ${fuente} <span class="pill-fecha">${fechasDia[j]}</span>${etiquetaTag(dias[fuente])}</button>`;
+  }).join("");
+  return `<div class="menu-fila menu-fila-abierta">
+    <span class="menu-fila-dia">${diaReal}<span class="pill-fecha">${fechasDia[i]}</span></span>
+    <div class="pills pills-menu">${opciones}</div>
+  </div>`;
 }
 
-function enlazarSetup(datos, hoy) {
-  document.querySelectorAll(".orden-select").forEach(s => {
-    s.addEventListener("change", () => {
-      borrador.orden[Number(s.dataset.i)] = s.value;
-    });
-  });
-  const guardar = document.querySelector('[data-setup="guardar"]');
-  if (guardar) guardar.addEventListener("click", () => {
-    const cfg = { entrenos: leerEntrenosDeDOM(), orden: [...borrador.orden] };
-    setConfigSemana(hoy, cfg);
-    setupAbierto = false;
-    borrador = null;
-    render(datos);
-  });
+function etiquetaTag(dia) {
+  if (!dia || !dia.naranja) return "";
+  return dia.naranja === "almuerzo" ? ` <span class="tag">🔶 comida</span>` : ` <span class="tag">🔶 cena</span>`;
 }
 
 function slotEntreno(i, e, fechasDia) {
   const cur = e || {};
-  const dias = ['<option value="">— sin entreno —</option>']
-    .concat(DIAS_LAB.map((d, idx) =>
-      `<option value="${idx + 1}" ${cur.dia === idx + 1 ? "selected" : ""}>${d}${fechasDia ? ` (${fechasDia[idx]})` : ""}</option>`))
-    .join("");
-  return `<div class="slot">
-    <label>Entreno ${i + 1}</label>
-    <select class="ent-dia" data-i="${i}">${dias}</select>
-    <select class="ent-mom" data-i="${i}">
-      <option value="manana" ${cur.momento === "manana" ? "selected" : ""}>🌅 Mañana</option>
-      <option value="tarde" ${cur.momento === "tarde" ? "selected" : ""}>🌇 Tarde</option>
-    </select>
+  const diaBtns = DIAS_LAB.map((d, idx) => {
+    const n = idx + 1;
+    const sel = cur.dia === n ? " sel" : "";
+    return `<button type="button" class="pill${sel}" data-slot="${i}" data-campo="dia" data-valor="${n}">
+      ${d}<span class="pill-fecha">${fechasDia[idx]}</span></button>`;
+  }).join("");
+  const momBtns = [["manana", "🌅 Mañana"], ["tarde", "🌇 Tarde"]].map(([val, label]) => {
+    const sel = cur.momento === val ? " sel" : "";
+    return `<button type="button" class="pill pill-momento${sel}" data-slot="${i}" data-campo="momento" data-valor="${val}">${label}</button>`;
+  }).join("");
+  const quitar = cur.dia
+    ? `<button type="button" class="quitar" data-slot="${i}" data-campo="quitar">Quitar este entreno</button>`
+    : "";
+  return `<div class="entreno-slot">
+    <p class="slot-titulo">Entreno ${i + 1}</p>
+    <div class="pills">${diaBtns}</div>
+    ${cur.dia ? `<div class="pills pills-momento">${momBtns}</div>` : ""}
+    ${quitar}
   </div>`;
 }
 
-function enlazarEditarSemana(datos, hoy, plan, cfg) {
-  const btn = document.querySelector('[data-editar-semana]');
+function guardarConfig(datos, hoy, orden) {
+  const cfg = {
+    entrenos: borrador.entrenos.filter(e => e && e.dia && e.momento),
+    orden,
+  };
+  setConfigSemana(hoy, cfg);
+  setupAbierto = false;
+  borrador = null;
+  filaExpandida = null;
+  render(datos);
+}
+
+function enlazarSetup(datos, hoy, plan, esNueva) {
+  document.querySelectorAll(".pill[data-slot]").forEach(b => {
+    b.addEventListener("click", () => {
+      const i = Number(b.dataset.slot);
+      const campo = b.dataset.campo;
+      const actual = borrador.entrenos[i] || {};
+      if (campo === "dia") {
+        borrador.entrenos[i] = { dia: Number(b.dataset.valor), momento: actual.momento || "manana" };
+      } else if (campo === "momento") {
+        borrador.entrenos[i] = { dia: actual.dia, momento: b.dataset.valor };
+      }
+      render(datos);
+    });
+  });
+  document.querySelectorAll(".quitar[data-slot]").forEach(b => {
+    b.addEventListener("click", () => {
+      borrador.entrenos[Number(b.dataset.slot)] = {};
+      render(datos);
+    });
+  });
+
+  const guardarNueva = document.querySelector('[data-setup="guardar-nueva"]');
+  if (guardarNueva) guardarNueva.addEventListener("click", () => {
+    const orden = autoOrdenar(datos, plan, borrador.entrenos, [...DIAS_LAB]);
+    guardarConfig(datos, hoy, orden);
+  });
+
+  document.querySelectorAll("[data-expandir]").forEach(b => {
+    b.addEventListener("click", () => {
+      filaExpandida = Number(b.dataset.expandir);
+      render(datos);
+    });
+  });
+  document.querySelectorAll(".pill-menu[data-menu-fila]").forEach(b => {
+    b.addEventListener("click", () => {
+      borrador.orden[Number(b.dataset.menuFila)] = b.dataset.menuDia;
+      filaExpandida = null;
+      render(datos);
+    });
+  });
+
+  const recalcular = document.querySelector('[data-setup="recalcular"]');
+  if (recalcular) recalcular.addEventListener("click", () => {
+    borrador.orden = autoOrdenar(datos, plan, borrador.entrenos, [...DIAS_LAB]);
+    render(datos);
+  });
+
+  const guardar = document.querySelector('[data-setup="guardar"]');
+  if (guardar) guardar.addEventListener("click", () => {
+    guardarConfig(datos, hoy, [...borrador.orden]);
+  });
+}
+
+function enlazarEditarSemana(datos, hoy, cfg) {
+  const btn = document.querySelector("[data-editar-semana]");
   if (btn) btn.addEventListener("click", () => {
-    abrirBorrador(datos, hoy, plan, cfg);
+    abrirBorrador(datos, cfg);
     setupAbierto = true;
     render(datos);
   });
 }
+
+// ================= tarjetas de comida =================
 
 function opciones(arr, listaHTML) {
   if (!arr || arr.length === 0) return "<p>—</p>";
@@ -335,7 +457,7 @@ function bannerPreview(datos, esPreview) {
     : "";
   const volver = document.getElementById("volver-hoy");
   if (volver) volver.addEventListener("click", () => {
-    vistaFecha = null; setupAbierto = false; borrador = null;
+    vistaFecha = null; setupAbierto = false; borrador = null; filaExpandida = null;
     document.getElementById("ver-otro").hidden = true;
     render(datos);
   });
@@ -349,7 +471,7 @@ function initVerOtro(datos) {
   btn.addEventListener("click", () => { panel.hidden = !panel.hidden; });
   input.addEventListener("change", () => {
     if (input.value) {
-      vistaFecha = input.value; setupAbierto = false; borrador = null;
+      vistaFecha = input.value; setupAbierto = false; borrador = null; filaExpandida = null;
       render(datos);
     }
   });

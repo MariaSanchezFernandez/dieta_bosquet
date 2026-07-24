@@ -91,81 +91,94 @@ header { text-align: center; margin-bottom: clamp(18px, 4vw, 28px); }
   font-size: .85rem;
   padding: 9px 14px;
 }
-.entreno .slot {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 10px 0;
-  flex-wrap: wrap;
-}
-.entreno .slot label { font-size: .85rem; opacity: .85; min-width: 74px; }
-.entreno .slot select {
-  font: inherit;
-  flex: 1 1 120px;
-  min-width: 0;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #fff;
-  color: var(--texto);
-}
 
-/* pantalla de configurar semana */
+/* pantalla de configurar/editar semana */
 .setup {
   grid-column: 1 / -1;
   background: var(--tarjeta);
   border-radius: 16px;
   padding: clamp(16px, 3vw, 22px);
   box-shadow: var(--sombra);
+  text-align: left;
 }
 .setup h2 {
   font-size: .95rem;
   color: var(--verde-osc);
-  margin: 18px 0 10px;
+  margin: 20px 0 6px;
 }
 .setup h2:first-child { margin-top: 0; }
-.setup .slot { margin: 10px 0; flex-wrap: wrap; }
-.setup .slot select {
-  font: inherit;
-  flex: 1 1 160px;
-  min-width: 140px;
-  padding: 10px;
-  border: 1px solid #cdd9d0;
-  border-radius: 10px;
-  background: #fff;
-  color: var(--texto);
-}
-.setup .slot label { font-size: .85rem; color: var(--gris); min-width: 74px; }
-.setup-ayuda { font-size: .85rem; color: var(--gris); margin-bottom: 10px; }
-.orden-fila {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 10px;
-  margin: 10px 0;
-}
-.orden-fila label {
-  flex: 0 0 auto;
-  min-width: 100px;
-  font-size: .9rem;
+.setup-ayuda { font-size: .85rem; color: var(--gris); margin-bottom: 12px; }
+
+.entreno-slot { margin: 14px 0; }
+.slot-titulo { font-size: .82rem; font-weight: 700; color: var(--gris); margin-bottom: 8px; }
+
+/* botones "pill" reutilizados en entrenos y selector de menú */
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill {
+  background: var(--verde-claro);
+  color: var(--verde-osc);
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: .92rem;
   font-weight: 600;
-  display: flex;
+  min-height: 44px;
+  display: inline-flex;
   flex-direction: column;
-  line-height: 1.25;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+  gap: 2px;
 }
-.orden-fila .fecha-corta { font-size: .75rem; font-weight: 400; color: var(--gris); }
-.orden-fila select {
-  font: inherit;
-  flex: 1 1 180px;
-  min-width: 160px;
-  padding: 10px;
-  border: 1px solid #cdd9d0;
-  border-radius: 10px;
-  background: #fff;
-  color: var(--texto);
+.pill .pill-fecha { font-size: .72rem; font-weight: 400; color: var(--gris); }
+.pill.sel { background: var(--verde-osc); color: #fff; border-color: var(--verde-osc); }
+.pill.sel .pill-fecha { color: rgba(255, 255, 255, .8); }
+.pills-momento { margin-top: 8px; }
+.pill-momento { flex: 1 1 120px; }
+.quitar {
+  background: transparent;
+  color: var(--gris);
+  font-size: .8rem;
+  font-weight: 600;
+  padding: 8px 4px;
+  margin-top: 4px;
 }
-.setup-acciones { margin-top: 18px; }
+
+.pills-menu { margin: 10px 0; }
+.pill-menu { flex: 1 1 140px; position: relative; }
+.pill-menu .recomendado {
+  font-size: .68rem;
+  font-weight: 700;
+  color: #f0a44a;
+}
+.pill.sel .recomendado { color: #ffe1b3; }
+.tag { font-size: .78rem; font-weight: 400; }
+
+/* filas de "qué como cada día" */
+.menu-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 0;
+  border-bottom: 1px solid #eef2ee;
+}
+.menu-fila:last-of-type { border-bottom: none; }
+.menu-fila-info { display: flex; flex-direction: column; gap: 2px; }
+.menu-fila-dia { font-weight: 700; font-size: .92rem; display: flex; flex-direction: column; line-height: 1.25; }
+.menu-fila-actual { font-size: .85rem; color: var(--gris); }
+.cambiar {
+  background: var(--verde-claro);
+  color: var(--verde-osc);
+  font-size: .82rem;
+  padding: 8px 14px;
+}
+.menu-fila-abierta { flex-direction: column; align-items: stretch; }
+
+.setup-acciones { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
 .setup-acciones button { width: 100%; padding: 14px; font-size: 1rem; }
+.setup-acciones .secundario { background: var(--verde-claro); color: var(--verde-osc); }
 
 .comida {
   background: var(--tarjeta);
@@ -286,15 +299,20 @@ footer { margin-top: 28px; text-align: center; }
   padding: 18px;
   margin: 12px 0;
   box-shadow: var(--sombra);
-  text-align: left;
+  text-align: center;
 }
-#ver-otro label { display: block; font-size: .9rem; margin-bottom: 8px; font-weight: 600; }
+#ver-otro label { display: block; font-size: .9rem; margin-bottom: 10px; font-weight: 600; color: var(--gris); }
 #ver-otro input[type=date] {
   font: inherit;
-  padding: 10px;
-  border: 1px solid #cdd9d0;
-  border-radius: 10px;
+  color-scheme: light;
+  padding: 12px 14px;
+  border: 1.5px solid #cdd9d0;
+  border-radius: 12px;
   width: 100%;
+  max-width: 240px;
+  margin: 0 auto;
+  text-align: center;
+  background: var(--verde-claro);
 }
 
 button {
@@ -316,15 +334,20 @@ button.secundario { background: #d6e4d9; color: var(--verde-osc); }
   padding: 18px;
   margin-top: 12px;
   box-shadow: var(--sombra);
-  text-align: left;
+  text-align: center;
 }
-#ajustes label { display: block; font-size: .9rem; margin-bottom: 8px; font-weight: 600; }
+#ajustes label { display: block; font-size: .9rem; margin-bottom: 10px; font-weight: 600; color: var(--gris); }
 #ajustes input[type=date] {
   font: inherit;
-  padding: 10px;
-  border: 1px solid #cdd9d0;
-  border-radius: 10px;
+  color-scheme: light;
+  padding: 12px 14px;
+  border: 1.5px solid #cdd9d0;
+  border-radius: 12px;
   width: 100%;
+  max-width: 240px;
+  margin: 0 auto;
+  text-align: center;
+  background: var(--verde-claro);
 }
-#ajustes .botones { display: flex; gap: 10px; margin-top: 12px; }
+#ajustes .botones { display: flex; gap: 10px; margin-top: 14px; max-width: 320px; margin-left: auto; margin-right: auto; }
 #ajustes .nota { font-size: .8rem; color: var(--gris); margin-top: 12px; }

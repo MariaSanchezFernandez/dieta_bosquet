@@ -5,7 +5,6 @@
     { "dia": 2, "momento": "tarde" },
     { "dia": 5, "momento": "manana" }
   ],
-  "ordenPorDefecto": ["Lunes", "Martes", "Sábado", "Miércoles", "Jueves", "Viernes"],
   "comun": {
     "desayunoConCHO": "½ tostada con AOVE + tomate + Jamón cocido / Jamón serrano / atún en conserva / huevos (1–1.5 huevos) + Agua + Pieza de fruta al gusto",
     "desayunoSinCHO": "Yogur griego natural con nueces picadas"

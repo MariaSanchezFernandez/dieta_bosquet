@@ -6,25 +6,22 @@ Calcula sola en qué semana del ciclo estás y alterna entre los dos PDFs
 
 ## Cómo se usa cada día
 Abres la web (o el acceso directo del móvil). Si es la primera vez que entras
-esa semana, te pide **configurarla** (una sola vez por semana):
+esa semana, te pide **tus 2 entrenos Z2**: qué día y si por la mañana o por
+la tarde (botones grandes, prerrellenado con Martes tarde + Viernes mañana,
+cámbialo si hace falta). Pulsas **«Guardar y ver hoy»** y ya está: la app
+coloca sola qué menú va cada día para que el plato **🔶 ya diseñado sin
+carbohidratos** caiga donde lo necesitas, sin que tengas que tocar nada más.
 
-1. **Tus 2 entrenos Z2** de esa semana: qué día y si por la mañana o por la
-   tarde (prerrellenado con Martes tarde + Viernes mañana, pero lo puedes
-   cambiar libremente).
-2. **Qué menú comes cada día**: un desplegable por cada día (Lunes…Sábado)
-   donde eliges cuál de los 6 menús del PDF quieres comer ese día —por
-   defecto viene ya colocado para que el plato **🔶 ya diseñado sin
-   carbohidratos** caiga justo el día que lo necesitas según tus entrenos,
-   pero puedes reordenarlo a mano como quieras—. Cada opción muestra su fecha
-   y, si tiene, la etiqueta 🔶 comida / 🔶 cena.
+Ya en el día a día ves desayuno, almuerzo y cena, con **🔶 sin carbos** en las
+comidas que toquen. Los domingos marca "día libre".
 
-Guardas y ya te muestra el día de hoy: desayuno, almuerzo y cena, con **🔶 sin
-carbos** en las comidas que toquen (calculado a partir de tus entrenos: por
-la mañana pide sin carbos la cena de la víspera; por la tarde, la comida de
-ese mismo día). Los domingos marca "día libre".
-
-Para cambiar algo de una semana ya configurada, usa el botón
-**«✏️ Editar esta semana»** que aparece en el día a día.
+Si algún día vas a comer otra cosa (has quedado fuera, te apetece cambiar),
+usa **«✏️ Editar esta semana»**: ahí puedes tocar los entrenos y, en «🍽️ Qué
+menú comes cada día», pulsar **Cambiar** en cualquier día para elegir con
+botones (con fecha y, si tiene, etiqueta 🔶 comida/🔶 cena) qué menú de los 6
+del PDF quieres comer ese día en concreto. Hay también un botón
+**«🔄 Recalcular según mis entrenos»** para volver a la sugerencia automática
+si lo lías.
 
 - **Ver otro día**: botón abajo para mirar qué toca cualquier fecha (si esa
   semana no está configurada, te la pide igual que la de hoy).
