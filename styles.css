@@ -146,13 +146,8 @@ header { text-align: center; margin-bottom: clamp(18px, 4vw, 28px); }
 
 .pills-menu { margin: 10px 0; }
 .pill-menu { flex: 1 1 140px; position: relative; }
-.pill-menu .recomendado {
-  font-size: .68rem;
-  font-weight: 700;
-  color: #f0a44a;
-}
-.pill.sel .recomendado { color: #ffe1b3; }
-.tag { font-size: .78rem; font-weight: 400; }
+.tag { font-size: .78rem; font-weight: 400; color: #f0a44a; }
+.pill.sel .tag { color: #ffe1b3; }
 
 /* filas de "qué como cada día" */
 .menu-fila {
@@ -161,20 +156,56 @@ header { text-align: center; margin-bottom: clamp(18px, 4vw, 28px); }
   justify-content: space-between;
   gap: 10px;
   flex-wrap: wrap;
-  padding: 10px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #eef2ee;
 }
 .menu-fila:last-of-type { border-bottom: none; }
-.menu-fila-info { display: flex; flex-direction: column; gap: 2px; }
-.menu-fila-dia { font-weight: 700; font-size: .92rem; display: flex; flex-direction: column; line-height: 1.25; }
-.menu-fila-actual { font-size: .85rem; color: var(--gris); }
+.menu-fila-info { display: flex; flex-direction: column; gap: 3px; }
+.menu-fila-dia { font-weight: 700; font-size: .92rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; line-height: 1.25; }
+.menu-fila-fuente { font-size: .78rem; font-weight: 400; color: var(--gris); }
+.menu-fila-plato {
+  font-size: .85rem;
+  color: var(--texto);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
 .cambiar {
   background: var(--verde-claro);
   color: var(--verde-osc);
   font-size: .82rem;
   padding: 8px 14px;
+  flex-shrink: 0;
 }
 .menu-fila-abierta { flex-direction: column; align-items: stretch; }
+
+/* opciones detalladas al pulsar "Cambiar" */
+.pills-menu-detalle { flex-direction: column; }
+.pill-menu-opcion {
+  align-items: flex-start;
+  text-align: left;
+  width: 100%;
+  padding: 12px 14px;
+  gap: 2px;
+}
+.pill-menu-dia { font-size: .88rem; font-weight: 700; }
+.pill-menu-plato {
+  font-size: .8rem;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.pill.sel .pill-menu-plato { color: rgba(255, 255, 255, .85); }
+.cancelar-cambio {
+  background: transparent;
+  color: var(--gris);
+  font-size: .82rem;
+  padding: 8px;
+  margin-top: 4px;
+}
 
 .setup-acciones { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
 .setup-acciones button { width: 100%; padding: 14px; font-size: 1rem; }

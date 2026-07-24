@@ -305,36 +305,48 @@ function pantallaSetup(datos, hoy, plan, esNueva) {
   </div>`;
 }
 
+function resumenPlato(arr, max = 42) {
+  const texto = (arr && arr[0]) || "—";
+  return texto.length > max ? texto.slice(0, max - 1) + "…" : texto;
+}
+
 function filaMenuDia(datos, plan, i, fechasDia) {
   const dias = datos.semanas[plan];
   const diaReal = DIAS_LAB[i];
   const actual = borrador.orden[i];
-  const tagActual = etiquetaTag(dias[actual]);
+  const diaOriginal = dias[actual];
+  const notaFuente = actual !== diaReal ? ` <span class="menu-fila-fuente">(menú de ${actual})</span>` : "";
 
   if (filaExpandida !== i) {
     return `<div class="menu-fila">
       <div class="menu-fila-info">
-        <span class="menu-fila-dia">${diaReal}<span class="pill-fecha">${fechasDia[i]}</span></span>
-        <span class="menu-fila-actual">Come: <b>${actual}</b>${tagActual}</span>
+        <span class="menu-fila-dia">${diaReal}<span class="pill-fecha">${fechasDia[i]}</span>${notaFuente}</span>
+        <span class="menu-fila-plato">🍽️ ${resumenPlato(diaOriginal.almuerzo)}${etiquetaTag(diaOriginal, "almuerzo")}</span>
+        <span class="menu-fila-plato">🌙 ${resumenPlato(diaOriginal.cena)}${etiquetaTag(diaOriginal, "cena")}</span>
       </div>
       <button type="button" class="cambiar" data-expandir="${i}">Cambiar</button>
     </div>`;
   }
 
   const opciones = DIAS_LAB.map((fuente, j) => {
+    const d = dias[fuente];
     const sel = actual === fuente ? " sel" : "";
-    return `<button type="button" class="pill pill-menu${sel}" data-menu-fila="${i}" data-menu-dia="${fuente}">
-      ${fuente} <span class="pill-fecha">${fechasDia[j]}</span>${etiquetaTag(dias[fuente])}</button>`;
+    return `<button type="button" class="pill pill-menu pill-menu-opcion${sel}" data-menu-fila="${i}" data-menu-dia="${fuente}">
+      <span class="pill-menu-dia">${fuente} <span class="pill-fecha">${fechasDia[j]}</span></span>
+      <span class="pill-menu-plato">🍽️ ${resumenPlato(d.almuerzo, 30)}${etiquetaTag(d, "almuerzo")}</span>
+      <span class="pill-menu-plato">🌙 ${resumenPlato(d.cena, 30)}${etiquetaTag(d, "cena")}</span>
+    </button>`;
   }).join("");
   return `<div class="menu-fila menu-fila-abierta">
     <span class="menu-fila-dia">${diaReal}<span class="pill-fecha">${fechasDia[i]}</span></span>
-    <div class="pills pills-menu">${opciones}</div>
+    <div class="pills pills-menu pills-menu-detalle">${opciones}</div>
+    <button type="button" class="cancelar-cambio" data-cancelar="${i}">Cancelar</button>
   </div>`;
 }
 
-function etiquetaTag(dia) {
-  if (!dia || !dia.naranja) return "";
-  return dia.naranja === "almuerzo" ? ` <span class="tag">🔶 comida</span>` : ` <span class="tag">🔶 cena</span>`;
+function etiquetaTag(dia, meal) {
+  if (!dia || dia.naranja !== meal) return "";
+  return ` <span class="tag">🔶 sin carbos</span>`;
 }
 
 function slotEntreno(i, e, fechasDia) {
@@ -402,6 +414,12 @@ function enlazarSetup(datos, hoy, plan, esNueva) {
   document.querySelectorAll("[data-expandir]").forEach(b => {
     b.addEventListener("click", () => {
       filaExpandida = Number(b.dataset.expandir);
+      render(datos);
+    });
+  });
+  document.querySelectorAll("[data-cancelar]").forEach(b => {
+    b.addEventListener("click", () => {
+      filaExpandida = null;
       render(datos);
     });
   });

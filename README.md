@@ -17,11 +17,11 @@ comidas que toquen. Los domingos marca "día libre".
 
 Si algún día vas a comer otra cosa (has quedado fuera, te apetece cambiar),
 usa **«✏️ Editar esta semana»**: ahí puedes tocar los entrenos y, en «🍽️ Qué
-menú comes cada día», pulsar **Cambiar** en cualquier día para elegir con
-botones (con fecha y, si tiene, etiqueta 🔶 comida/🔶 cena) qué menú de los 6
-del PDF quieres comer ese día en concreto. Hay también un botón
-**«🔄 Recalcular según mis entrenos»** para volver a la sugerencia automática
-si lo lías.
+menú comes cada día», cada fila muestra ya el **plato real** de la comida y
+la cena de ese día (no solo el nombre del día). Pulsa **Cambiar** para ver
+las 6 opciones con su plato y fecha, elige una o dale a **Cancelar** para
+dejarlo como estaba. Hay también un botón **«🔄 Recalcular según mis
+entrenos»** para volver a la sugerencia automática si lo lías.
 
 - **Ver otro día**: botón abajo para mirar qué toca cualquier fecha (si esa
   semana no está configurada, te la pide igual que la de hoy).
