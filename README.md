@@ -5,35 +5,31 @@ Calcula sola en qué semana del ciclo estás y alterna entre los dos PDFs
 (Semana 1 y 3 / Semana 2 y 4).
 
 ## Cómo se usa cada día
-Abres la web (o el acceso directo del móvil) y te muestra desayuno, almuerzo,
-merienda y cena de hoy. Los domingos marca "día libre".
+Abres la web (o el acceso directo del móvil). Si es la primera vez que entras
+esa semana, te pide **configurarla** (una sola vez por semana):
 
-- **Entreno Zona 2**: por defecto configurado como **Martes por la tarde** y
-  **Viernes por la mañana** (editable en el panel «🏃 Entrenos Z2 de esta
-  semana» si algún día cambia). La app coloca sola las comidas **🔶 sin
-  carbos**:
-  - **Z2 por la mañana** → desayuno sin CHO (yogur) + **cena de la víspera**
-    (la noche anterior) sin carbos.
-  - **Z2 por la tarde** → desayuno sin CHO (yogur) + **comida** sin carbos.
-  - Los días sin entreno van normales (con CHO).
+1. **Tus 2 entrenos Z2** de esa semana: qué día y si por la mañana o por la
+   tarde (prerrellenado con Martes tarde + Viernes mañana, pero lo puedes
+   cambiar libremente).
+2. **Qué menú comes cada día**: un desplegable por cada día (Lunes…Sábado)
+   donde eliges cuál de los 6 menús del PDF quieres comer ese día —por
+   defecto viene ya colocado para que el plato **🔶 ya diseñado sin
+   carbohidratos** caiga justo el día que lo necesitas según tus entrenos,
+   pero puedes reordenarlo a mano como quieras—. Cada opción muestra su fecha
+   y, si tiene, la etiqueta 🔶 comida / 🔶 cena.
 
-  El PDF ya diseña un plato bajo en carbohidratos en días fijos (marcados en
-  naranja: cada `menu.json` guarda qué comida —almuerzo o cena— es ese plato,
-  campo `naranja`). En vez de romper la pareja comida+cena de un mismo día,
-  la app **reordena qué día completo (desayuno+comida+cena, tal cual lo
-  diseñó la nutricionista) se sirve cada día real** de la semana —campo
-  `ordenDias` en `menu.json`— para que ese plato caiga solo donde se
-  necesita. Cuando un día muestra el menú de otro día, aparece un aviso
-  «📋 Hoy comes el menú de…». Si algún día no hay ningún plato diseñado sin
-  carbos que reubicar (p.ej. tras editar los entrenos a otros días), se usa
-  el aviso genérico de "quita el hidrato" como último recurso.
+Guardas y ya te muestra el día de hoy: desayuno, almuerzo y cena, con **🔶 sin
+carbos** en las comidas que toquen (calculado a partir de tus entrenos: por
+la mañana pide sin carbos la cena de la víspera; por la tarde, la comida de
+ese mismo día). Los domingos marca "día libre".
 
-  ⚠️ El `ordenDias` actual está calculado para el horario por defecto
-  (Martes tarde + Viernes mañana). Si cambias los entrenos de una semana a
-  otros días, avísame para recalcularlo y que siga cuadrando.
-- **Ver otro día**: botón abajo para mirar qué toca cualquier fecha.
+Para cambiar algo de una semana ya configurada, usa el botón
+**«✏️ Editar esta semana»** que aparece en el día a día.
+
+- **Ver otro día**: botón abajo para mirar qué toca cualquier fecha (si esa
+  semana no está configurada, te la pide igual que la de hoy).
 - **Ajustes**: ahí cambias la fecha de inicio cuando empieza una dieta nueva.
-  (Se guarda en tu navegador/móvil, no hace falta tocar nada más.)
+  (Todo se guarda en tu navegador/móvil, no hace falta tocar nada más.)
 
 ## Cuando te dan una dieta nueva (cada mes)
 1. Doble clic en **`Actualizar dieta.command`**. Te guía paso a paso:

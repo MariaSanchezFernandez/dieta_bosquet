@@ -5,9 +5,9 @@ const DIAS_LAB = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado
 const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
-let vistaFecha = null;      // "ver otro día" (null = hoy)
-let editorAbierto = false;  // panel de configurar entrenos abierto
-let entrenosDefecto = [];   // config por defecto (de menu.json)
+let vistaFecha = null;   // "ver otro día" (null = hoy)
+let setupAbierto = false; // pantalla de configurar semana visible
+let borrador = null;      // config en edición mientras el setup está abierto
 
 // ---- utilidades de fecha ----
 function aMedianoche(d) {
@@ -27,37 +27,41 @@ function lunesDe(d) {
   x.setDate(x.getDate() - dow);
   return x;
 }
-
-// ---- entrenos de la semana en localStorage ----
-// Cada entreno: {dia: 1..6 (Lun..Sáb), momento: "manana"|"tarde"}
-function claveSemana(d) {
-  return "entrenos-" + clave(lunesDe(d));
-}
-function getEntrenos(d) {
-  const raw = localStorage.getItem(claveSemana(d));
-  if (raw === null) return entrenosDefecto;   // semana sin configurar -> por defecto
-  try {
-    return JSON.parse(raw) || [];
-  } catch {
-    return [];
-  }
-}
-function setEntrenos(d, arr) {
-  localStorage.setItem(claveSemana(d), JSON.stringify(arr));
-}
 function getFechaInicio(datos) {
   return localStorage.getItem("fechaInicio") || datos.fechaInicio;
 }
 
-// El PDF diseña un plato ya bajo en carbohidratos en días concretos
-// (campo "naranja" de cada día). En vez de romper la pareja comida+cena de
-// un mismo día, se reordena qué día completo (desayuno+comida+cena, tal
-// cual lo diseñó la nutricionista) se sirve cada día real de la semana, para
-// que ese plato caiga solo donde se necesita. Ver "ordenDias" en menu.json.
-function diaFuente(datos, nombreDiaReal) {
-  const orden = datos.ordenDias || DIAS_LAB;
-  const i = DIAS_LAB.indexOf(nombreDiaReal);
-  return orden[i] || nombreDiaReal;
+// ---- plan (1y3 / 2y4): se calcula solo a partir de la fecha de inicio ----
+function calcularPlan(datos, hoy) {
+  const inicio = lunesDe(parseFecha(getFechaInicio(datos)));
+  const semanasPasadas = Math.floor((lunesDe(hoy) - inicio) / (7 * 86400000));
+  const idx = ((semanasPasadas % 4) + 4) % 4;
+  return { idx, plan: idx % 2 === 0 ? "1y3" : "2y4" };
+}
+
+// ---- configuración de cada semana (entrenos + qué menú va cada día) ----
+// Guardada en localStorage bajo "semana-<lunes de esa semana>":
+//   { entrenos: [{dia:1..6, momento:"manana"|"tarde"}, ...], orden: [6 nombres de día] }
+function claveSemanaCfg(d) {
+  return "semana-" + clave(lunesDe(d));
+}
+function getConfigSemana(d) {
+  const raw = localStorage.getItem(claveSemanaCfg(d));
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+function setConfigSemana(d, cfg) {
+  localStorage.setItem(claveSemanaCfg(d), JSON.stringify(cfg));
+}
+
+function etiquetaNaranja(datos, plan, nombreDia) {
+  const d = datos.semanas[plan][nombreDia];
+  if (!d || !d.naranja) return "";
+  return d.naranja === "almuerzo" ? " 🔶 comida" : " 🔶 cena";
 }
 
 // ---- render ----
@@ -88,29 +92,36 @@ function render(datos) {
     return;
   }
 
-  const semanasPasadas = Math.floor((hoy - inicio) / (7 * 86400000));
-  const idx = semanasPasadas % 4;
-  const clavePlan = idx % 2 === 0 ? "1y3" : "2y4";
+  const { idx, plan } = calcularPlan(datos, hoy);
   document.getElementById("semana").textContent =
-    `Semana ${idx + 1} · plan «${clavePlan === "1y3" ? "1 y 3" : "2 y 4"}»`;
+    `Semana ${idx + 1} · plan «${plan === "1y3" ? "1 y 3" : "2 y 4"}»`;
+
+  const cfg = getConfigSemana(hoy);
+  if (!cfg || setupAbierto) {
+    if (!borrador) abrirBorrador(datos, hoy, plan, cfg);
+    document.getElementById("titulo-dia").textContent = "Configurar semana";
+    cont.innerHTML = pantallaSetup(datos, hoy);
+    enlazarSetup(datos, hoy);
+    return;
+  }
 
   const nombreDia = DIAS[hoy.getDay()];
   document.getElementById("titulo-dia").textContent = nombreDia;
 
   if (hoy.getDay() === 0) {
     cont.innerHTML = diaLibre(hoy);
-    enlazarEntrenos(datos, hoy);
     return;
   }
 
-  cont.innerHTML = tarjetasDelDia(datos, hoy, clavePlan, nombreDia);
-  enlazarEntrenos(datos, hoy);
+  cont.innerHTML = tarjetasDelDia(datos, hoy, plan, nombreDia, cfg);
+  enlazarEditarSemana(datos, hoy, plan, cfg);
 }
 
 function diaLibre(hoy) {
-  // aviso si mañana (lunes) hay entreno matutino
-  const ent = getEntrenos(new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1));
-  const avisoLunes = ent.some(e => e.dia === 1 && e.momento === "manana")
+  // aviso si mañana (lunes, semana siguiente) hay entreno matutino
+  const manana = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1);
+  const cfgManana = getConfigSemana(manana);
+  const avisoLunes = cfgManana && cfgManana.entrenos.some(e => e.dia === 1 && e.momento === "manana")
     ? `<div class="leyenda">🔶 Mañana entrenas por la mañana → la cena de hoy va <b>sin carbos</b>.</div>`
     : "";
   return `
@@ -122,14 +133,12 @@ function diaLibre(hoy) {
     </div>${avisoLunes}`;
 }
 
-// Qué comidas deben ir sin carbos hoy, según el entreno Z2 configurado.
-function calcularComidas(diaOriginal, hoy) {
-  const dow = hoy.getDay();
-  const ent = getEntrenos(hoy);
-  const sesionHoy = ent.find(e => e.dia === dow) || null;
-  const manana = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1);
-  const entManana = getEntrenos(manana);
-  const necesitaCena = entManana.some(e => e.dia === manana.getDay() && e.momento === "manana");
+// Qué comidas deben ir sin carbos hoy, según los entrenos de esta semana.
+function calcularComidas(diaOriginal, hoy, entrenos) {
+  const dow = hoy.getDay(); // 1..6
+  const sesionHoy = entrenos.find(e => e.dia === dow) || null;
+  const dowManana = dow === 6 ? null : dow + 1; // sábado+1 = domingo, fuera del modelo
+  const necesitaCena = dowManana != null && entrenos.some(e => e.dia === dowManana && e.momento === "manana");
   const necesitaAlmuerzo = !!(sesionHoy && sesionHoy.momento === "tarde");
   const desayunoSin = !!sesionHoy;
 
@@ -139,31 +148,27 @@ function calcularComidas(diaOriginal, hoy) {
     necesitaAlmuerzo,
     necesitaCena,
     desayunoSin,
-    // gracias al reordenamiento de días (ordenDias), lo normal es que el
-    // plato ya diseñado sin carbos ("naranja") coincida directamente;
-    // si algún día no coincide (p.ej. tras editar los entrenos), se avisa
-    // con la instrucción genérica en vez de romper la pareja comida+cena.
     disenadoAlmuerzo: necesitaAlmuerzo && diaOriginal.naranja === "almuerzo",
     disenadoCena: necesitaCena && diaOriginal.naranja === "cena",
     sesionHoy,
   };
 }
 
-function tarjetasDelDia(datos, hoy, clavePlan, nombreDiaReal) {
-  const nombreDiaFuente = diaFuente(datos, nombreDiaReal);
-  const diaOriginal = datos.semanas[clavePlan][nombreDiaFuente];
+function tarjetasDelDia(datos, hoy, plan, nombreDiaReal, cfg) {
+  const nombreDiaFuente = cfg.orden[DIAS_LAB.indexOf(nombreDiaReal)] || nombreDiaReal;
+  const diaOriginal = datos.semanas[plan][nombreDiaFuente];
   const c = datos.comun;
-  const r = calcularComidas(diaOriginal, hoy);
+  const r = calcularComidas(diaOriginal, hoy, cfg.entrenos);
 
   const desayunoTexto = r.desayunoSin ? c.desayunoSinCHO : c.desayunoConCHO;
   const listaHTML = (arr) => "<ul>" + arr.map(x => `<li>${x}</li>`).join("") + "</ul>";
 
   const avisoMenu = nombreDiaFuente !== nombreDiaReal
-    ? `<p class="aviso-menu">📋 Hoy comes el menú de <b>${nombreDiaFuente}</b> (reordenado para que el plato sin carbos caiga en su sitio).</p>`
+    ? `<p class="aviso-menu">📋 Hoy comes el menú de <b>${nombreDiaFuente}</b>.</p>`
     : "";
 
   const bloques = [
-    panelEntrenos(hoy, r),
+    resumenSemana(cfg, r),
     avisoMenu,
     tarjeta("☕", "Desayuno", `<p>${desayunoTexto}</p>`, r.desayunoSin),
     tarjeta("🍽️", "Almuerzo", opciones(r.almuerzo, listaHTML), r.necesitaAlmuerzo),
@@ -190,9 +195,10 @@ function tarjetasDelDia(datos, hoy, clavePlan, nombreDiaReal) {
   return bloques.join("") + leyenda;
 }
 
-// ---- panel de entrenos de la semana ----
-function panelEntrenos(hoy, r) {
-  const ent = getEntrenos(hoy);
+function resumenSemana(cfg, r) {
+  const resumen = cfg.entrenos.length
+    ? cfg.entrenos.map(e => `${DIAS_LAB[e.dia - 1]} ${e.momento === "manana" ? "🌅" : "🌇"}`).join(" · ")
+    : "Sin entrenos definidos";
   let notaHoy;
   if (r.sesionHoy) {
     notaHoy = `Hoy entrenas Z2 ${r.sesionHoy.momento === "manana" ? "🌅 por la mañana" : "🌇 por la tarde"}.`;
@@ -201,34 +207,93 @@ function panelEntrenos(hoy, r) {
   } else {
     notaHoy = "Hoy no entrenas.";
   }
-
-  if (!editorAbierto) {
-    const resumen = ent.length
-      ? ent.map(e => `${DIAS_LAB[e.dia - 1]} ${e.momento === "manana" ? "🌅" : "🌇"}`).join(" · ")
-      : "Sin definir todavía";
-    return `<div class="entreno">
-      <p class="preg">🏃 Entrenos Z2 de esta semana</p>
-      <p class="resumen">${resumen}</p>
-      <p class="nota-hoy">${notaHoy}</p>
-      <button type="button" data-ent="toggle">${ent.length ? "Editar" : "Configurar"}</button>
-    </div>`;
-  }
   return `<div class="entreno">
-    <p class="preg">🏃 Tus 2 entrenos Z2 de esta semana</p>
-    ${slotEntreno(0, ent[0])}
-    ${slotEntreno(1, ent[1])}
-    <div class="ent-acciones">
-      <button type="button" data-ent="guardar">Guardar</button>
-      <button type="button" data-ent="toggle" class="secundario">Cancelar</button>
+    <p class="preg">🏃 Esta semana</p>
+    <p class="resumen">${resumen}</p>
+    <p class="nota-hoy">${notaHoy}</p>
+    <button type="button" data-editar-semana="1">✏️ Editar esta semana</button>
+  </div>`;
+}
+
+// ---- pantalla de configuración de la semana ----
+function abrirBorrador(datos, hoy, plan, cfgExistente) {
+  if (cfgExistente) {
+    borrador = { entrenos: cfgExistente.entrenos.map(e => ({ ...e })), orden: [...cfgExistente.orden] };
+    return;
+  }
+  const entrenos = (datos.entrenosPorDefecto || []).map(e => ({ ...e }));
+  const orden = datos.ordenPorDefecto ? [...datos.ordenPorDefecto] : [...DIAS_LAB];
+  borrador = { entrenos, orden };
+}
+
+function fechaCorta(f) {
+  return `${f.getDate()} ${MESES[f.getMonth()].slice(0, 3)}`;
+}
+
+function pantallaSetup(datos, hoy) {
+  const { plan } = calcularPlan(datos, hoy);
+  const lunes = lunesDe(hoy);
+  const fechasDia = DIAS_LAB.map((_, i) =>
+    fechaCorta(new Date(lunes.getFullYear(), lunes.getMonth(), lunes.getDate() + i)));
+
+  const slots = [0, 1].map(i => slotEntreno(i, borrador.entrenos[i], fechasDia)).join("");
+
+  const filasOrden = DIAS_LAB.map((diaReal, i) => {
+    const opciones = DIAS_LAB.map((fuente, j) => {
+      const sel = borrador.orden[i] === fuente ? "selected" : "";
+      return `<option value="${fuente}" ${sel}>${fuente} (${fechasDia[j]})${etiquetaNaranja(datos, plan, fuente)}</option>`;
+    }).join("");
+    return `<div class="orden-fila">
+      <label>${diaReal}<span class="fecha-corta">${fechasDia[i]}</span></label>
+      <select class="orden-select" data-i="${i}">${opciones}</select>
+    </div>`;
+  }).join("");
+
+  return `<div class="setup">
+    <h2>1. Tus 2 entrenos Z2 esta semana</h2>
+    ${slots}
+
+    <h2>2. Qué menú comes cada día</h2>
+    <p class="setup-ayuda">🔶 indica el plato ya diseñado sin carbohidratos: colócalo en el día que lo necesites según tus entrenos.</p>
+    ${filasOrden}
+
+    <div class="setup-acciones">
+      <button type="button" data-setup="guardar">Guardar y ver el día</button>
     </div>
   </div>`;
 }
 
-function slotEntreno(i, e) {
+function leerEntrenosDeDOM() {
+  const arr = [];
+  [0, 1].forEach(i => {
+    const d = document.querySelector(`.ent-dia[data-i="${i}"]`);
+    const m = document.querySelector(`.ent-mom[data-i="${i}"]`);
+    if (d && d.value) arr.push({ dia: Number(d.value), momento: m.value });
+  });
+  return arr;
+}
+
+function enlazarSetup(datos, hoy) {
+  document.querySelectorAll(".orden-select").forEach(s => {
+    s.addEventListener("change", () => {
+      borrador.orden[Number(s.dataset.i)] = s.value;
+    });
+  });
+  const guardar = document.querySelector('[data-setup="guardar"]');
+  if (guardar) guardar.addEventListener("click", () => {
+    const cfg = { entrenos: leerEntrenosDeDOM(), orden: [...borrador.orden] };
+    setConfigSemana(hoy, cfg);
+    setupAbierto = false;
+    borrador = null;
+    render(datos);
+  });
+}
+
+function slotEntreno(i, e, fechasDia) {
   const cur = e || {};
   const dias = ['<option value="">— sin entreno —</option>']
     .concat(DIAS_LAB.map((d, idx) =>
-      `<option value="${idx + 1}" ${cur.dia === idx + 1 ? "selected" : ""}>${d}</option>`))
+      `<option value="${idx + 1}" ${cur.dia === idx + 1 ? "selected" : ""}>${d}${fechasDia ? ` (${fechasDia[idx]})` : ""}</option>`))
     .join("");
   return `<div class="slot">
     <label>Entreno ${i + 1}</label>
@@ -240,25 +305,12 @@ function slotEntreno(i, e) {
   </div>`;
 }
 
-function enlazarEntrenos(datos, hoy) {
-  document.querySelectorAll("[data-ent]").forEach(b => {
-    b.addEventListener("click", () => {
-      const accion = b.dataset.ent;
-      if (accion === "toggle") {
-        editorAbierto = !editorAbierto;
-        render(datos);
-      } else if (accion === "guardar") {
-        const arr = [];
-        [0, 1].forEach(i => {
-          const dia = Number(document.querySelector(`.ent-dia[data-i="${i}"]`).value);
-          const momento = document.querySelector(`.ent-mom[data-i="${i}"]`).value;
-          if (dia) arr.push({ dia, momento });
-        });
-        setEntrenos(hoy, arr);
-        editorAbierto = false;
-        render(datos);
-      }
-    });
+function enlazarEditarSemana(datos, hoy, plan, cfg) {
+  const btn = document.querySelector('[data-editar-semana]');
+  if (btn) btn.addEventListener("click", () => {
+    abrirBorrador(datos, hoy, plan, cfg);
+    setupAbierto = true;
+    render(datos);
   });
 }
 
@@ -283,7 +335,7 @@ function bannerPreview(datos, esPreview) {
     : "";
   const volver = document.getElementById("volver-hoy");
   if (volver) volver.addEventListener("click", () => {
-    vistaFecha = null; editorAbierto = false;
+    vistaFecha = null; setupAbierto = false; borrador = null;
     document.getElementById("ver-otro").hidden = true;
     render(datos);
   });
@@ -296,7 +348,10 @@ function initVerOtro(datos) {
   const input = document.getElementById("ver-fecha");
   btn.addEventListener("click", () => { panel.hidden = !panel.hidden; });
   input.addEventListener("change", () => {
-    if (input.value) { vistaFecha = input.value; editorAbierto = false; render(datos); }
+    if (input.value) {
+      vistaFecha = input.value; setupAbierto = false; borrador = null;
+      render(datos);
+    }
   });
 }
 
@@ -323,10 +378,7 @@ function initAjustes(datos) {
 
 fetch("menu.json")
   .then(r => r.json())
-  .then(datos => {
-    entrenosDefecto = datos.entrenosPorDefecto || [];
-    render(datos); initVerOtro(datos); initAjustes(datos);
-  })
+  .then(datos => { render(datos); initVerOtro(datos); initAjustes(datos); })
   .catch(() => {
     document.getElementById("titulo-dia").textContent = "Error";
     document.getElementById("contenido").innerHTML =
