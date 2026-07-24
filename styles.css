@@ -199,6 +199,7 @@ header { text-align: center; margin-bottom: clamp(18px, 4vw, 28px); }
   max-width: 100%;
 }
 .pill.sel .pill-menu-plato { color: rgba(255, 255, 255, .85); }
+.pill-menu-swap { font-size: .72rem; color: #f0a44a; font-weight: 600; }
 .cancelar-cambio {
   background: transparent;
   color: var(--gris);

@@ -71,3 +71,12 @@ Sí se sube `menu.json`, que tiene solo los nombres de los platos.
 ## Requisitos para actualizar (solo en tu Mac)
 - `poppler` (`brew install poppler`) — ya instalado.
 - Python 3 — ya disponible.
+
+## Nota técnica: caché
+GitHub Pages guarda `app.js`/`styles.css` en caché hasta 10 minutos, y el
+móvil puede tardar en refrescarlos aunque el cambio ya esté publicado. Por
+eso `index.html` los referencia con `?v=AAAAMMDDx` (p.ej. `?v=20260724a`):
+**cada vez que se cambie `app.js` o `styles.css`, hay que subir también ese
+número en `index.html`** para forzar que el móvil los recargue. Si algo se
+ve raro tras una actualización, primero cierra del todo la app en el móvil
+(quitarla del multitarea) y vuelve a abrirla.

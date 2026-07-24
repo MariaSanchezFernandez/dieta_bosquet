@@ -331,10 +331,14 @@ function filaMenuDia(datos, plan, i, fechasDia) {
   const opciones = DIAS_LAB.map((fuente, j) => {
     const d = dias[fuente];
     const sel = actual === fuente ? " sel" : "";
+    const otroIdx = borrador.orden.findIndex((val, idx) => idx !== i && val === fuente);
+    const notaSwap = !sel && otroIdx !== -1
+      ? `<span class="pill-menu-swap">↔ se cambia con ${DIAS_LAB[otroIdx]}</span>` : "";
     return `<button type="button" class="pill pill-menu pill-menu-opcion${sel}" data-menu-fila="${i}" data-menu-dia="${fuente}">
       <span class="pill-menu-dia">${fuente} <span class="pill-fecha">${fechasDia[j]}</span></span>
       <span class="pill-menu-plato">🍽️ ${resumenPlato(d.almuerzo, 30)}${etiquetaTag(d, "almuerzo")}</span>
       <span class="pill-menu-plato">🌙 ${resumenPlato(d.cena, 30)}${etiquetaTag(d, "cena")}</span>
+      ${notaSwap}
     </button>`;
   }).join("");
   return `<div class="menu-fila menu-fila-abierta">
@@ -425,7 +429,13 @@ function enlazarSetup(datos, hoy, plan, esNueva) {
   });
   document.querySelectorAll(".pill-menu[data-menu-fila]").forEach(b => {
     b.addEventListener("click", () => {
-      borrador.orden[Number(b.dataset.menuFila)] = b.dataset.menuDia;
+      const i = Number(b.dataset.menuFila);
+      const elegido = b.dataset.menuDia;
+      // si ese menú ya lo come otro día, se intercambian entre sí para
+      // que nunca se repita el mismo menú dos veces en la semana
+      const otroIdx = borrador.orden.findIndex((val, idx) => idx !== i && val === elegido);
+      if (otroIdx !== -1) borrador.orden[otroIdx] = borrador.orden[i];
+      borrador.orden[i] = elegido;
       filaExpandida = null;
       render(datos);
     });
